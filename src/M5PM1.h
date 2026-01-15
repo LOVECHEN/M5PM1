@@ -674,6 +674,121 @@ typedef enum {
 } m5pm1_aw8737a_refresh_t;
 
 // ============================
+// 清除类型枚举（用于 IRQ/WAKE 状态读取）
+// Clean Type Enumeration (for IRQ/WAKE status read)
+// ============================
+/**
+ * @brief 状态读取后的清除行为
+ *        Clean behavior after status read
+ * @note 用于 getWakeSource(), irqGetGpioStatus(), irqGetSysStatus(), irqGetBtnStatus()
+ *       Used for getWakeSource(), irqGetGpioStatus(), irqGetSysStatus(), irqGetBtnStatus()
+ */
+typedef enum {
+    M5PM1_CLEAN_NONE = 0x00,        // 不清除
+                                    // No clean
+    M5PM1_CLEAN_TRIGGERED = 0x01,   // 清除已触发的位
+                                    // Clean triggered bits only
+    M5PM1_CLEAN_ALL = 0x02          // 清除所有位
+                                    // Clean all bits
+} m5pm1_clean_type_t;
+
+// ============================
+// GPIO 中断标志枚举
+// GPIO IRQ Flag Enumeration
+// ============================
+/**
+ * @brief GPIO 中断标志位
+ *        GPIO interrupt flag bits
+ * @note 用于 irqGetGpioStatus(), irqClearGpio()
+ *       Used for irqGetGpioStatus(), irqClearGpio()
+ */
+typedef enum {
+    M5PM1_IRQ_GPIO0 = (1 << 0),     // GPIO0 中断标志
+                                    // GPIO0 interrupt flag
+    M5PM1_IRQ_GPIO1 = (1 << 1),     // GPIO1 中断标志
+                                    // GPIO1 interrupt flag
+    M5PM1_IRQ_GPIO2 = (1 << 2),     // GPIO2 中断标志
+                                    // GPIO2 interrupt flag
+    M5PM1_IRQ_GPIO3 = (1 << 3),     // GPIO3 中断标志
+                                    // GPIO3 interrupt flag
+    M5PM1_IRQ_GPIO4 = (1 << 4),     // GPIO4 中断标志
+                                    // GPIO4 interrupt flag
+    M5PM1_IRQ_GPIO_ALL = 0x1F,      // 所有 GPIO 中断标志
+                                    // All GPIO interrupt flags
+    M5PM1_IRQ_GPIO_NONE = 0x00      // 无中断
+                                    // No interrupt
+} m5pm1_irq_gpio_t;
+
+// ============================
+// 系统中断标志枚举
+// System IRQ Flag Enumeration
+// ============================
+/**
+ * @brief 系统中断标志位
+ *        System interrupt flag bits
+ * @note 用于 irqGetSysStatus(), irqClearSys()
+ *       Used for irqGetSysStatus(), irqClearSys()
+ */
+typedef enum {
+    M5PM1_IRQ_SYS_5VIN_INSERT = (1 << 0),       // 5VIN 插入
+                                                // 5VIN insertion
+    M5PM1_IRQ_SYS_5VIN_REMOVE = (1 << 1),       // 5VIN 移除
+                                                // 5VIN removal
+    M5PM1_IRQ_SYS_5VINOUT_INSERT = (1 << 2),    // 5VINOUT 插入
+                                                // 5VINOUT insertion
+    M5PM1_IRQ_SYS_5VINOUT_REMOVE = (1 << 3),    // 5VINOUT 移除
+                                                // 5VINOUT removal
+    M5PM1_IRQ_SYS_BAT_INSERT = (1 << 4),        // 电池插入
+                                                // Battery insertion
+    M5PM1_IRQ_SYS_BAT_REMOVE = (1 << 5),        // 电池移除
+                                                // Battery removal
+    M5PM1_IRQ_SYS_ALL = 0x3F,                   // 所有系统中断标志
+                                                // All system interrupt flags
+    M5PM1_IRQ_SYS_NONE = 0x00                   // 无中断
+                                                // No interrupt
+} m5pm1_irq_sys_t;
+
+// ============================
+// 电源配置位掩码枚举
+// Power Configuration Bitmask Enumeration
+// ============================
+/**
+ * @brief 电源配置位掩码
+ *        Power configuration bitmask
+ * @note 用于 setPowerConfig(), getPowerConfig()
+ *       Used for setPowerConfig(), getPowerConfig()
+ */
+typedef enum {
+    M5PM1_PWR_CFG_CHG_EN = (1 << 0),    // 充电使能
+                                        // Charge enable
+    M5PM1_PWR_CFG_DCDC_EN = (1 << 1),   // 5V DCDC 使能
+                                        // 5V DCDC enable
+    M5PM1_PWR_CFG_LDO_EN = (1 << 2),    // 3.3V LDO 使能
+                                        // 3.3V LDO enable
+    M5PM1_PWR_CFG_5V_INOUT = (1 << 3),  // 5V 双向端口模式
+                                        // 5V bidirectional port mode
+    M5PM1_PWR_CFG_LED_CTRL = (1 << 4)   // LED 控制权
+                                        // LED control
+} m5pm1_pwr_cfg_t;
+
+// ============================
+// GPIO 输出状态枚举
+// GPIO Output State Enumeration
+// ============================
+/**
+ * @brief GPIO 输出状态
+ *        GPIO output state
+ * @note 用于 gpioSetOutput()
+ *       Used for gpioSetOutput()
+ */
+typedef enum {
+    M5PM1_GPIO_STATE_LOW = 0,       // 低电平
+                                    // Low level
+    M5PM1_GPIO_STATE_HIGH = 1       // 高电平
+                                    // High level
+} m5pm1_gpio_state_t;
+
+// ============================
 // GPIO 电平定义
 // GPIO Level Definitions
 // ============================
@@ -1077,11 +1192,12 @@ public:
     /**
      * @brief Read wake source / 读取唤醒源
      * @param src Output: wake source bitmask / 输出: 唤醒源位掩码
-     * @param clearAfterRead 0=no clear, 1=clear triggered bits, 2=clear all
-     *                       0=不清除, 1=清除触发位, 2=清除全部
+     * @param cleanType Clean behavior after read / 读取后的清除行为
+     *                  M5PM1_CLEAN_NONE=不清除, M5PM1_CLEAN_TRIGGERED=清除触发位, M5PM1_CLEAN_ALL=清除全部
      * @return M5PM1_OK if successful, error code otherwise
+     *         成功返回 M5PM1_OK，否则返回错误码
      */
-    m5pm1_err_t getWakeSource(uint8_t* src, uint8_t clearAfterRead = 0);
+    m5pm1_err_t getWakeSource(uint8_t* src, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
     m5pm1_err_t clearWakeSource(uint8_t mask);
 
     m5pm1_err_t setPowerConfig(uint8_t mask, uint8_t value);
@@ -1140,32 +1256,34 @@ public:
     /**
      * @brief Read GPIO interrupt status / 读取 GPIO 中断状态
      * @param status Output: status bitmask / 输出: 状态位掩码
-     * @param clearAfterRead 0=no clear, 1=clear triggered bits, 2=clear all
-     *                       0=不清除, 1=清除触发位, 2=清除全部
+     * @param cleanType Clean behavior after read / 读取后的清除行为
+     *                  M5PM1_CLEAN_NONE=不清除, M5PM1_CLEAN_TRIGGERED=清除触发位, M5PM1_CLEAN_ALL=清除全部
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetGpioStatus(uint8_t* status, uint8_t clearAfterRead = 0);
+    m5pm1_err_t irqGetGpioStatus(uint8_t* status, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
     m5pm1_err_t irqClearGpio(uint8_t mask);
 
     /**
      * @brief Read system interrupt status / 读取系统中断状态
      * @param status Output: status bitmask / 输出: 状态位掩码
-     * @param clearAfterRead 0=no clear, 1=clear triggered bits, 2=clear all
+     * @param cleanType Clean behavior after read / 读取后的清除行为
+     *                  M5PM1_CLEAN_NONE=不清除, M5PM1_CLEAN_TRIGGERED=清除触发位, M5PM1_CLEAN_ALL=清除全部
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetSysStatus(uint8_t* status, uint8_t clearAfterRead = 0);
+    m5pm1_err_t irqGetSysStatus(uint8_t* status, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
     m5pm1_err_t irqClearSys(uint8_t mask);
 
     /**
      * @brief Read button interrupt status / 读取按钮中断状态
      * @param status Output: status bitmask / 输出: 状态位掩码
-     * @param clearAfterRead 0=no clear, 1=clear triggered bits, 2=clear all
+     * @param cleanType Clean behavior after read / 读取后的清除行为
+     *                  M5PM1_CLEAN_NONE=不清除, M5PM1_CLEAN_TRIGGERED=清除触发位, M5PM1_CLEAN_ALL=清除全部
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetBtnStatus(uint8_t* status, uint8_t clearAfterRead = 0);
+    m5pm1_err_t irqGetBtnStatus(uint8_t* status, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
     m5pm1_err_t irqClearBtn(uint8_t mask);
 
     /**

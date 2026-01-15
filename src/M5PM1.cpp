@@ -2414,7 +2414,11 @@ m5pm1_err_t M5PM1::getPowerSource(m5pm1_pwr_src_t* src) {
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::getWakeSource(uint8_t* src, uint8_t clearAfterRead) {
+// ============================
+// 唤醒源读取
+// Wake Source Read
+// ============================
+m5pm1_err_t M5PM1::getWakeSource(uint8_t* src, m5pm1_clean_type_t cleanType) {
     if (src == nullptr) return M5PM1_ERR_INVALID_ARG;
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
@@ -2422,11 +2426,13 @@ m5pm1_err_t M5PM1::getWakeSource(uint8_t* src, uint8_t clearAfterRead) {
     }
     if (!_readReg(M5PM1_REG_WAKE_SRC, src)) return M5PM1_ERR_I2C_COMM;
 
-    if (clearAfterRead == 1 && *src != 0) {
+    if (cleanType == M5PM1_CLEAN_TRIGGERED && *src != 0) {
+        // 清除已触发的位
         // Clear triggered bits
         if (!_writeReg(M5PM1_REG_WAKE_SRC, *src)) return M5PM1_ERR_I2C_COMM;
-    } else if (clearAfterRead == 2) {
-        // Clear all
+    } else if (cleanType == M5PM1_CLEAN_ALL) {
+        // 清除所有位
+        // Clear all bits
         if (!_writeReg(M5PM1_REG_WAKE_SRC, 0x7F)) return M5PM1_ERR_I2C_COMM;
     }
     return M5PM1_OK;
@@ -2767,7 +2773,7 @@ m5pm1_err_t M5PM1::getDoubleOffDisable(bool* disabled) {
 // IRQ Functions
 // ============================
 
-m5pm1_err_t M5PM1::irqGetGpioStatus(uint8_t* status, uint8_t clearAfterRead) {
+m5pm1_err_t M5PM1::irqGetGpioStatus(uint8_t* status, m5pm1_clean_type_t cleanType) {
     if (status == nullptr) {
         M5PM1_LOG_E(TAG, "irqGetGpioStatus status is null");
         return M5PM1_ERR_INVALID_ARG;
@@ -2778,11 +2784,13 @@ m5pm1_err_t M5PM1::irqGetGpioStatus(uint8_t* status, uint8_t clearAfterRead) {
     }
     if (!_readReg(M5PM1_REG_IRQ_STATUS1, status)) return M5PM1_ERR_I2C_COMM;
 
-    if (clearAfterRead == 1 && *status != 0) {
+    if (cleanType == M5PM1_CLEAN_TRIGGERED && *status != 0) {
+        // 清除已触发的位
         // Clear triggered bits
         if (!_writeReg(M5PM1_REG_IRQ_STATUS1, *status)) return M5PM1_ERR_I2C_COMM;
-    } else if (clearAfterRead == 2) {
-        // Clear all
+    } else if (cleanType == M5PM1_CLEAN_ALL) {
+        // 清除所有位
+        // Clear all bits
         if (!_writeReg(M5PM1_REG_IRQ_STATUS1, 0x1F)) return M5PM1_ERR_I2C_COMM;
     }
     return M5PM1_OK;
@@ -2801,7 +2809,7 @@ m5pm1_err_t M5PM1::irqClearGpio(uint8_t mask) {
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetSysStatus(uint8_t* status, uint8_t clearAfterRead) {
+m5pm1_err_t M5PM1::irqGetSysStatus(uint8_t* status, m5pm1_clean_type_t cleanType) {
     if (status == nullptr) {
         M5PM1_LOG_E(TAG, "irqGetSysStatus status is null");
         return M5PM1_ERR_INVALID_ARG;
@@ -2812,11 +2820,13 @@ m5pm1_err_t M5PM1::irqGetSysStatus(uint8_t* status, uint8_t clearAfterRead) {
     }
     if (!_readReg(M5PM1_REG_IRQ_STATUS2, status)) return M5PM1_ERR_I2C_COMM;
 
-    if (clearAfterRead == 1 && *status != 0) {
+    if (cleanType == M5PM1_CLEAN_TRIGGERED && *status != 0) {
+        // 清除已触发的位
         // Clear triggered bits
         if (!_writeReg(M5PM1_REG_IRQ_STATUS2, *status)) return M5PM1_ERR_I2C_COMM;
-    } else if (clearAfterRead == 2) {
-        // Clear all
+    } else if (cleanType == M5PM1_CLEAN_ALL) {
+        // 清除所有位
+        // Clear all bits
         if (!_writeReg(M5PM1_REG_IRQ_STATUS2, 0x3F)) return M5PM1_ERR_I2C_COMM;
     }
     return M5PM1_OK;
@@ -2835,7 +2845,7 @@ m5pm1_err_t M5PM1::irqClearSys(uint8_t mask) {
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetBtnStatus(uint8_t* status, uint8_t clearAfterRead) {
+m5pm1_err_t M5PM1::irqGetBtnStatus(uint8_t* status, m5pm1_clean_type_t cleanType) {
     if (status == nullptr) {
         M5PM1_LOG_E(TAG, "irqGetBtnStatus status is null");
         return M5PM1_ERR_INVALID_ARG;
@@ -2846,11 +2856,13 @@ m5pm1_err_t M5PM1::irqGetBtnStatus(uint8_t* status, uint8_t clearAfterRead) {
     }
     if (!_readReg(M5PM1_REG_IRQ_STATUS3, status)) return M5PM1_ERR_I2C_COMM;
 
-    if (clearAfterRead == 1 && *status != 0) {
+    if (cleanType == M5PM1_CLEAN_TRIGGERED && *status != 0) {
+        // 清除已触发的位
         // Clear triggered bits
         if (!_writeReg(M5PM1_REG_IRQ_STATUS3, *status)) return M5PM1_ERR_I2C_COMM;
-    } else if (clearAfterRead == 2) {
-        // Clear all
+    } else if (cleanType == M5PM1_CLEAN_ALL) {
+        // 清除所有位
+        // Clear all bits
         if (!_writeReg(M5PM1_REG_IRQ_STATUS3, 0x07)) return M5PM1_ERR_I2C_COMM;
     }
     return M5PM1_OK;
