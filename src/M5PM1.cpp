@@ -1837,8 +1837,6 @@ m5pm1_err_t M5PM1::dumpPinStatus() {
         uint8_t modeVal = (mode >> i) & 0x01;
         uint8_t outVal = (out >> i) & 0x01;
         uint8_t inVal = (in >> i) & 0x01;
-        uint8_t drvVal = (drv >> i) & 0x01;
-
         M5PM1_LOG_I(TAG, "GPIO%d: %s %s %s OUT=%d IN=%d",
                     i, funcNames[funcVal], modeVal ? "OUT" : "IN",
                     pullNames[pullVal], outVal, inVal);

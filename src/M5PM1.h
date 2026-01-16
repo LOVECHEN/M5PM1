@@ -355,16 +355,6 @@ typedef enum {
 // 位定义
 // ============================
 
-// ---- PWR_CFG Register Bits ----
-// ---- 电源配置寄存器位 ----
-#define M5PM1_PWR_CFG_CHG_EN        (1 << 0)    // 充电使能 / Charge enable
-#define M5PM1_PWR_CFG_DCDC_EN       (1 << 1)    // 5V DCDC使能 / 5V DCDC enable
-#define M5PM1_PWR_CFG_LDO_EN        (1 << 2)    // 3.3V LDO使能 / 3.3V LDO enable
-#define M5PM1_PWR_CFG_5V_INOUT      (1 << 3)    // 5V双向端口模式 / 5V bidirectional port mode
-                                                // 0=输入模式 1=输出模式(由DCDC供电)
-#define M5PM1_PWR_CFG_LED_CTRL      (1 << 4)    // LED控制权 / LED control
-                                                // 0=PM1控制 1=外部MCU控制
-
 // ---- I2C_CFG Register Bits ----
 // ---- I2C配置寄存器位 ----
 #define M5PM1_I2C_CFG_SLEEP_MASK    0x0F        // I2C睡眠超时掩码 / I2C sleep timeout mask
