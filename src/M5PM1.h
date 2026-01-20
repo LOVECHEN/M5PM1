@@ -1036,25 +1036,128 @@ public:
     // 设备信息
     // Device Information
     // ========================
+    /**
+     * @brief 读取设备 ID
+     *        Read device ID
+     * @param id 输出：设备 ID (通常为 0x6E)
+     *           Output: device ID (typically 0x6E)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getDeviceId(uint8_t* id);
+
+    /**
+     * @brief 读取设备型号
+     *        Read device model
+     * @param model 输出：设备型号
+     *              Output: device model
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getDeviceModel(uint8_t* model);
+
+    /**
+     * @brief 读取硬件版本
+     *        Read hardware version
+     * @param version 输出：硬件版本号
+     *                Output: hardware version number
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getHwVersion(uint8_t* version);
+
+    /**
+     * @brief 读取软件版本
+     *        Read software version
+     * @param version 输出：软件版本号
+     *                Output: software version number
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getSwVersion(uint8_t* version);
 
     // ========================
     // GPIO 功能 (Arduino风格 - 带返回值)
     // GPIO Functions (Arduino-style - WithRes)
     // ========================
+    /**
+     * @brief 设置引脚模式（带错误返回）
+     *        Set pin mode (with error return)
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param mode 模式：INPUT (0) 或 OUTPUT (1)
+     *             Mode: INPUT (0) or OUTPUT (1)
+     * @param err 输出：错误码指针，如果为 NULL 则忽略
+     *            Output: error code pointer, ignored if NULL
+     * @note 此函数会检查引脚冲突并返回错误码
+     *       This function checks for pin conflicts and returns error code
+     */
     void pinModeWithRes(uint8_t pin, uint8_t mode, m5pm1_err_t* err);
+
+    /**
+     * @brief 写入数字电平（带错误返回）
+     *        Write digital level (with error return)
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param value 电平值：LOW (0) 或 HIGH (1)
+     *              Level: LOW (0) or HIGH (1)
+     * @param err 输出：错误码指针，如果为 NULL 则忽略
+     *            Output: error code pointer, ignored if NULL
+     */
     void digitalWriteWithRes(uint8_t pin, uint8_t value, m5pm1_err_t* err);
+
+    /**
+     * @brief 读取数字电平（带错误返回）
+     *        Read digital level (with error return)
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param err 输出：错误码指针，如果为 NULL 则忽略
+     *            Output: error code pointer, ignored if NULL
+     * @return 电平值：LOW (0) 或 HIGH (1)，错误时返回 -1
+     *         Level: LOW (0) or HIGH (1), returns -1 on error
+     */
     int digitalReadWithRes(uint8_t pin, m5pm1_err_t* err);
 
     // ========================
     // GPIO 功能 (Arduino风格)
     // GPIO Functions (Arduino-style)
     // ========================
+    /**
+     * @brief 设置引脚模式（Arduino 兼容）
+     *        Set pin mode (Arduino compatible)
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param mode 模式：INPUT (0) 或 OUTPUT (1)
+     *             Mode: INPUT (0) or OUTPUT (1)
+     * @note 此函数不返回错误码，错误会被忽略
+     *       This function does not return error code, errors are ignored
+     * @note 如果需要错误处理，请使用 pinModeWithRes()
+     *       Use pinModeWithRes() if error handling is needed
+     */
     void pinMode(uint8_t pin, uint8_t mode);
+
+    /**
+     * @brief 写入数字电平（Arduino 兼容）
+     *        Write digital level (Arduino compatible)
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param value 电平值：LOW (0) 或 HIGH (1)
+     *              Level: LOW (0) or HIGH (1)
+     * @note 此函数不返回错误码，错误会被忽略
+     *       This function does not return error code, errors are ignored
+     */
     void digitalWrite(uint8_t pin, uint8_t value);
+
+    /**
+     * @brief 读取数字电平（Arduino 兼容）
+     *        Read digital level (Arduino compatible)
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @return 电平值：LOW (0) 或 HIGH (1)，错误时返回 -1
+     *         Level: LOW (0) or HIGH (1), returns -1 on error
+     * @note 此函数不返回错误码，错误会被忽略
+     *       This function does not return error code, errors are ignored
+     */
     int digitalRead(uint8_t pin);
 
     // ========================
@@ -1073,13 +1176,106 @@ public:
     m5pm1_err_t gpioSet(m5pm1_gpio_num_t pin, m5pm1_gpio_mode_t mode,
                         uint8_t value, m5pm1_gpio_pull_t pull, m5pm1_gpio_drive_t drive);
 
+    /**
+     * @brief 设置 GPIO 功能模式
+     *        Set GPIO function mode
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param func 功能模式：M5PM1_GPIO_FUNC_GPIO / IRQ / WAKE / OTHER
+     *             Function mode: M5PM1_GPIO_FUNC_GPIO / IRQ / WAKE / OTHER
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 切换功能会检查冲突（如 PWM、ADC、NeoPixel）
+     *       Switching function checks for conflicts (PWM, ADC, NeoPixel)
+     */
     m5pm1_err_t gpioSetFunc(m5pm1_gpio_num_t pin, m5pm1_gpio_func_t func);
+
+    /**
+     * @brief 设置 GPIO 输入/输出模式
+     *        Set GPIO input/output mode
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param mode 模式：M5PM1_GPIO_MODE_INPUT / OUTPUT
+     *             Mode: M5PM1_GPIO_MODE_INPUT / OUTPUT
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t gpioSetMode(m5pm1_gpio_num_t pin, m5pm1_gpio_mode_t mode);
+
+    /**
+     * @brief 设置 GPIO 输出电平
+     *        Set GPIO output level
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param value 电平值：0 (LOW) 或 1 (HIGH)
+     *              Level: 0 (LOW) or 1 (HIGH)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 引脚必须先设置为输出模式
+     *       Pin must be set to output mode first
+     */
     m5pm1_err_t gpioSetOutput(m5pm1_gpio_num_t pin, uint8_t value);
+
+    /**
+     * @brief 读取 GPIO 输入电平
+     *        Read GPIO input level
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param value 输出：电平值 (0 或 1)
+     *              Output: level value (0 or 1)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t gpioGetInput(m5pm1_gpio_num_t pin, uint8_t* value);
+
+    /**
+     * @brief 设置 GPIO 上下拉模式
+     *        Set GPIO pull mode
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param pull 上下拉模式：M5PM1_GPIO_PULL_NONE / UP / DOWN
+     *             Pull mode: M5PM1_GPIO_PULL_NONE / UP / DOWN
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t gpioSetPull(m5pm1_gpio_num_t pin, m5pm1_gpio_pull_t pull);
+
+    /**
+     * @brief 设置 GPIO 驱动模式
+     *        Set GPIO drive mode
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param drive 驱动模式：M5PM1_GPIO_DRIVE_PUSHPULL / OPENDRAIN
+     *              Drive mode: M5PM1_GPIO_DRIVE_PUSHPULL / OPENDRAIN
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t gpioSetDrive(m5pm1_gpio_num_t pin, m5pm1_gpio_drive_t drive);
+
+    /**
+     * @brief 设置 GPIO 唤醒使能
+     *        Set GPIO wake enable
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param enable true 启用唤醒，false 禁用
+     *               true to enable wake, false to disable
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 唤醒功能用于从睡眠模式唤醒设备
+     *       Wake function is used to wake device from sleep mode
+     */
     m5pm1_err_t gpioSetWakeEnable(m5pm1_gpio_num_t pin, bool enable);
+
+    /**
+     * @brief 设置 GPIO 唤醒边沿
+     *        Set GPIO wake edge
+     * @param pin GPIO 引脚号 (0-4)
+     *            GPIO pin number (0-4)
+     * @param edge 唤醒边沿：M5PM1_GPIO_WAKE_FALLING / RISING
+     *             Wake edge: M5PM1_GPIO_WAKE_FALLING / RISING
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t gpioSetWakeEdge(m5pm1_gpio_num_t pin, m5pm1_gpio_wake_edge_t edge);
 
     /**
@@ -1140,28 +1336,151 @@ public:
     // ADC 功能
     // ADC Functions
     // ========================
+    /**
+     * @brief 读取 ADC 通道值
+     *        Read ADC channel value
+     * @param channel ADC 通道：M5PM1_ADC_CH_1 (GPIO1) / M5PM1_ADC_CH_2 (GPIO2) / M5PM1_ADC_CH_TEMP (温度传感器)
+     *                ADC channel: M5PM1_ADC_CH_1 (GPIO1) / M5PM1_ADC_CH_2 (GPIO2) / M5PM1_ADC_CH_TEMP (temperature sensor)
+     * @param value 输出参数，存储读取的 ADC 值 (0-4095, 12位)
+     *              Output parameter, stores the read ADC value (0-4095, 12-bit)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note GPIO 必须配置为 FUNC_OTHER 才能使用 ADC 功能
+     *       GPIO must be configured as FUNC_OTHER to use ADC function
+     */
     m5pm1_err_t analogRead(m5pm1_adc_channel_t channel, uint16_t* value);
+
+    /**
+     * @brief 检查 ADC 是否正在转换
+     *        Check if ADC is busy converting
+     * @param busy 输出参数，true 表示 ADC 正在转换，false 表示空闲
+     *             Output parameter, true if ADC is converting, false if idle
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t isAdcBusy(bool* busy);
+
+    /**
+     * @brief 禁用 ADC 功能
+     *        Disable ADC function
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 禁用后可降低功耗
+     *       Disabling ADC can reduce power consumption
+     */
     m5pm1_err_t disableAdc();
 
     // ========================
     // 温度传感器
     // Temperature Sensor
     // ========================
+    /**
+     * @brief 读取内部温度传感器值
+     *        Read internal temperature sensor value
+     * @param temperature 输出参数，存储温度值 (单位：0.1°C，例如 250 表示 25.0°C)
+     *                    Output parameter, stores temperature value (unit: 0.1°C, e.g., 250 means 25.0°C)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 内部温度传感器测量的是芯片温度，可能高于环境温度
+     *       Internal temperature sensor measures chip temperature, may be higher than ambient temperature
+     */
     m5pm1_err_t readTemperature(uint16_t* temperature);
 
     // ========================
     // PWM 功能
     // PWM Functions
     // ========================
+    /**
+     * @brief 设置 PWM 频率（全通道共享）
+     *        Set PWM frequency (shared by all channels)
+     * @param frequency PWM 频率 (Hz)，范围 0-65535
+     *                  PWM frequency (Hz), range 0-65535
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 修改频率会影响所有 PWM 通道
+     *       Changing frequency affects all PWM channels
+     */
     m5pm1_err_t setPwmFrequency(uint16_t frequency);
+
+    /**
+     * @brief 获取当前 PWM 频率
+     *        Get current PWM frequency
+     * @param frequency 输出参数，存储当前 PWM 频率 (Hz)
+     *                  Output parameter, stores current PWM frequency (Hz)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getPwmFrequency(uint16_t* frequency);
+
+    /**
+     * @brief 设置 PWM 占空比（8位精度）
+     *        Set PWM duty cycle (8-bit precision)
+     * @param channel PWM 通道：M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     *                PWM channel: M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     * @param duty 占空比 (0-255)，0=0%, 255=100%
+     *             Duty cycle (0-255), 0=0%, 255=100%
+     * @param polarity 极性，false=正常，true=反相（默认 false）
+     *                 Polarity, false=normal, true=inverted (default false)
+     * @param enable 输出使能，true=启用，false=禁用（默认 true）
+     *               Output enable, true=enable, false=disable (default true)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note GPIO 必须配置为 FUNC_OTHER 才能使用 PWM 功能
+     *       GPIO must be configured as FUNC_OTHER to use PWM function
+     */
     m5pm1_err_t setPwmDuty(m5pm1_pwm_channel_t channel, uint8_t duty,
                            bool polarity = false, bool enable = true);
+
+    /**
+     * @brief 获取 PWM 占空比（8位精度）
+     *        Get PWM duty cycle (8-bit precision)
+     * @param channel PWM 通道：M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     *                PWM channel: M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     * @param duty 输出参数，存储占空比 (0-255)
+     *             Output parameter, stores duty cycle (0-255)
+     * @param polarity 输出参数，存储极性（false=正常，true=反相）
+     *                 Output parameter, stores polarity (false=normal, true=inverted)
+     * @param enable 输出参数，存储使能状态（true=启用，false=禁用）
+     *               Output parameter, stores enable state (true=enable, false=disable)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getPwmDuty(m5pm1_pwm_channel_t channel, uint8_t* duty,
                            bool* polarity, bool* enable);
+
+    /**
+     * @brief 设置 PWM 占空比（12位精度）
+     *        Set PWM duty cycle (12-bit precision)
+     * @param channel PWM 通道：M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     *                PWM channel: M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     * @param duty12 占空比 (0-4095)，0=0%, 4095=100%
+     *               Duty cycle (0-4095), 0=0%, 4095=100%
+     * @param polarity 极性，false=正常，true=反相（默认 false）
+     *                 Polarity, false=normal, true=inverted (default false)
+     * @param enable 输出使能，true=启用，false=禁用（默认 true）
+     *               Output enable, true=enable, false=disable (default true)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note GPIO 必须配置为 FUNC_OTHER 才能使用 PWM 功能
+     *       GPIO must be configured as FUNC_OTHER to use PWM function
+     */
     m5pm1_err_t setPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t duty12,
                                bool polarity = false, bool enable = true);
+
+    /**
+     * @brief 获取 PWM 占空比（12位精度）
+     *        Get PWM duty cycle (12-bit precision)
+     * @param channel PWM 通道：M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     *                PWM channel: M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     * @param duty12 输出参数，存储占空比 (0-4095)
+     *               Output parameter, stores duty cycle (0-4095)
+     * @param polarity 输出参数，存储极性（false=正常，true=反相）
+     *                 Output parameter, stores polarity (false=normal, true=inverted)
+     * @param enable 输出参数，存储使能状态（true=启用，false=禁用）
+     *               Output parameter, stores enable state (true=enable, false=disable)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t* duty12,
                                bool* polarity, bool* enable);
     /**
@@ -1184,22 +1503,93 @@ public:
      */
     m5pm1_err_t setPwmConfig(m5pm1_pwm_channel_t channel, bool enable, bool polarity,
                             uint16_t frequency, uint16_t duty12);
+
+    /**
+     * @brief 设置 PWM 输出（Arduino 兼容）
+     *        Set PWM output (Arduino compatible)
+     * @param channel PWM 通道：M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     *                PWM channel: M5PM1_PWM_CH_0 (GPIO3) / M5PM1_PWM_CH_1 (GPIO4)
+     * @param value 占空比 (0-255)，0=0%, 255=100%
+     *              Duty cycle (0-255), 0=0%, 255=100%
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 此函数会自动启用 PWM 输出，极性为正常
+     *       This function automatically enables PWM output with normal polarity
+     * @note GPIO 必须配置为 FUNC_OTHER 才能使用 PWM 功能
+     *       GPIO must be configured as FUNC_OTHER to use PWM function
+     */
     m5pm1_err_t analogWrite(m5pm1_pwm_channel_t channel, uint8_t value);
 
     // ========================
     // 电压读取功能
     // Voltage Reading Functions
     // ========================
+    /**
+     * @brief 读取参考电压
+     *        Read reference voltage
+     * @param mv 输出参数，存储参考电压值 (mV)
+     *           Output parameter, stores reference voltage (mV)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t readVref(uint16_t* mv);
+
+    /**
+     * @brief 获取参考电压（readVref 的别名）
+     *        Get reference voltage (alias of readVref)
+     * @param mv 输出参数，存储参考电压值 (mV)
+     *           Output parameter, stores reference voltage (mV)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getRefVoltage(uint16_t* mv);
+
+    /**
+     * @brief 读取电池电压
+     *        Read battery voltage
+     * @param mv 输出参数，存储电池电压值 (mV)
+     *           Output parameter, stores battery voltage (mV)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 可用于监测电池电量
+     *       Can be used to monitor battery level
+     */
     m5pm1_err_t readVbat(uint16_t* mv);
+
+    /**
+     * @brief 读取输入电压（VIN）
+     *        Read input voltage (VIN)
+     * @param mv 输出参数，存储输入电压值 (mV)
+     *           Output parameter, stores input voltage (mV)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 可用于检测外部电源是否连接
+     *       Can be used to detect if external power is connected
+     */
     m5pm1_err_t readVin(uint16_t* mv);
+
+    /**
+     * @brief 读取 5V 输入/输出电压
+     *        Read 5V input/output voltage
+     * @param mv 输出参数，存储 5V 电压值 (mV)
+     *           Output parameter, stores 5V voltage (mV)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t read5VInOut(uint16_t* mv);
 
     // ========================
     // 电源管理
     // Power Management
     // ========================
+    /**
+     * @brief 获取当前电源来源
+     *        Get current power source
+     * @param src 输出参数，存储电源来源：M5PM1_PWR_SRC_BATTERY / M5PM1_PWR_SRC_VIN / M5PM1_PWR_SRC_5V
+     *            Output parameter, stores power source: M5PM1_PWR_SRC_BATTERY / M5PM1_PWR_SRC_VIN / M5PM1_PWR_SRC_5V
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getPowerSource(m5pm1_pwr_src_t* src);
 
     /**
@@ -1219,9 +1609,37 @@ public:
      *         Return M5PM1_OK on success, error code otherwise
      */
     m5pm1_err_t getWakeSource(uint8_t* src, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+
+    /**
+     * @brief 清除唤醒源标志
+     *        Clear wake source flags
+     * @param mask 要清除的唤醒源位掩码
+     *             Wake source bitmask to clear
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t clearWakeSource(uint8_t mask);
 
+    /**
+     * @brief 设置电源配置寄存器
+     *        Set power configuration register
+     * @param mask 要修改的位掩码
+     *             Bitmask of bits to modify
+     * @param value 要设置的值
+     *              Value to set
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t setPowerConfig(uint8_t mask, uint8_t value);
+
+    /**
+     * @brief 获取电源配置寄存器
+     *        Get power configuration register
+     * @param config 输出参数，存储电源配置值
+     *               Output parameter, stores power configuration value
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getPowerConfig(uint8_t* config);
 
     /**
@@ -1231,16 +1649,70 @@ public:
      */
     m5pm1_err_t clearPowerConfig(uint8_t mask);
 
+    /**
+     * @brief 设置充电功能使能
+     *        Set charge function enable
+     * @param enable true=启用充电，false=禁用充电
+     *               true=enable charging, false=disable charging
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t setChargeEnable(bool enable);
+
+    /**
+     * @brief 设置 DCDC 5V 输出使能
+     *        Set DCDC 5V output enable
+     * @param enable true=启用 DCDC，false=禁用 DCDC
+     *               true=enable DCDC, false=disable DCDC
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t setDcdcEnable(bool enable);
+
+    /**
+     * @brief 设置 LDO 3.3V 输出使能
+     *        Set LDO 3.3V output enable
+     * @param enable true=启用 LDO，false=禁用 LDO
+     *               true=enable LDO, false=disable LDO
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t setLdoEnable(bool enable);
+
+    /**
+     * @brief 设置 5V 输入/输出使能
+     *        Set 5V input/output enable
+     * @param enable true=启用 5V，false=禁用 5V
+     *               true=enable 5V, false=disable 5V
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t set5VInOutEnable(bool enable);
-    m5pm1_err_t setLedControlEnable(bool enable);
+
+    /**
+     * @brief 设置 LED_EN 引脚默认电平
+     *        Set LED_EN pin default level
+     * @param level true=高电平, false=低电平
+     *              true=High Level, false=Low Level
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
+    m5pm1_err_t setLedEnLevel(bool level);
 
     // ========================
     // 电池功能
     // Battery Functions
     // ========================
+    /**
+     * @brief 设置电池低压保护阈值
+     *        Set battery low voltage protection threshold
+     * @param mv 低压保护阈值 (mV)
+     *           Low voltage protection threshold (mV)
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 当电池电压低于此阈值时，系统会自动关机
+     *       System will automatically shut down when battery voltage is below this threshold
+     */
     m5pm1_err_t setBatteryLvp(uint16_t mv);
 
     // ========================
@@ -1262,12 +1734,84 @@ public:
     // 按钮功能
     // Button Functions
     // ========================
+    /**
+     * @brief 配置按钮事件类型和延时
+     *        Configure button event type and delay
+     * @param type 按钮事件类型：M5PM1_BTN_TYPE_CLICK (单击) / M5PM1_BTN_TYPE_DOUBLE (双击) / M5PM1_BTN_TYPE_LONG (长按)
+     *             Button event type: M5PM1_BTN_TYPE_CLICK (single click) / M5PM1_BTN_TYPE_DOUBLE (double click) / M5PM1_BTN_TYPE_LONG (long press)
+     * @param delay 延时配置：M5PM1_BTN_DELAY_125MS / 250MS / 500MS / 1000MS
+     *              Delay configuration: M5PM1_BTN_DELAY_125MS / 250MS / 500MS / 1000MS
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t btnSetConfig(m5pm1_btn_type_t type, m5pm1_btn_delay_t delay);
+
+    /**
+     * @brief 获取按钮当前状态
+     *        Get button current state
+     * @param pressed 输出参数，true=按钮当前被按下，false=按钮未被按下
+     *                Output parameter, true=button is currently pressed, false=button is not pressed
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 此函数读取按钮的实时状态，不会清除标志
+     *       This function reads the real-time button state, does not clear flags
+     */
     m5pm1_err_t btnGetState(bool* pressed);
+
+    /**
+     * @brief 获取按钮标志（读后自动清除）
+     *        Get button flag (auto-clear after read)
+     * @param wasPressed 输出参数，true=按钮曾被按下，false=按钮未被按下
+     *                   Output parameter, true=button was pressed, false=button was not pressed
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 此函数读取后会自动清除标志，适合用于检测按钮事件
+     *       This function auto-clears the flag after reading, suitable for detecting button events
+     */
     m5pm1_err_t btnGetFlag(bool* wasPressed);
+
+    /**
+     * @brief 设置单击复位功能禁用
+     *        Set single click reset function disable
+     * @param disable true=禁用单击复位，false=启用单击复位
+     *                true=disable single click reset, false=enable single click reset
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 禁用后，单击按钮不会触发系统复位
+     *       After disabling, single click will not trigger system reset
+     */
     m5pm1_err_t setSingleResetDisable(bool disable);
+
+    /**
+     * @brief 获取单击复位功能禁用状态
+     *        Get single click reset function disable state
+     * @param disabled 输出参数，true=已禁用，false=已启用
+     *                 Output parameter, true=disabled, false=enabled
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getSingleResetDisable(bool* disabled);
+
+    /**
+     * @brief 设置双击关机功能禁用
+     *        Set double click power-off function disable
+     * @param disable true=禁用双击关机，false=启用双击关机
+     *                true=disable double click power-off, false=enable double click power-off
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     * @note 禁用后，双击按钮不会触发系统关机
+     *       After disabling, double click will not trigger system power-off
+     */
     m5pm1_err_t setDoubleOffDisable(bool disable);
+
+    /**
+     * @brief 获取双击关机功能禁用状态
+     *        Get double click power-off function disable state
+     * @param disabled 输出参数，true=已禁用，false=已启用
+     *                 Output parameter, true=disabled, false=enabled
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
     m5pm1_err_t getDoubleOffDisable(bool* disabled);
 
     // ========================
@@ -1412,7 +1956,8 @@ public:
 
 
     /**
-     * @brief Set single GPIO pin interrupt mask / 设置单个 GPIO 引脚中断屏蔽
+     * @brief Set single GPIO pin interrupt mask
+     *        设置单个 GPIO 引脚中断屏蔽
      * @param pin GPIO pin number (0-4) / GPIO 引脚号
      * @param mask Mask control: M5PM1_IRQ_MASK_DISABLE(unmask) / M5PM1_IRQ_MASK_ENABLE(mask)
      * @return 成功返回 M5PM1_OK，否则返回错误码
@@ -1431,7 +1976,8 @@ public:
     m5pm1_err_t irqGetGpioMaskAll(uint8_t* mask);
 
     /**
-     * @brief Set single system event interrupt mask / 设置单个系统事件中断屏蔽
+     * @brief Set single system event interrupt mask
+     *        设置单个系统事件中断屏蔽
      * @param event Event bit (0-5): 0=5VIN_IN, 1=5VIN_OUT, 2=5VINOUT_IN, 3=5VINOUT_OUT, 4=BAT_IN, 5=BAT_OUT
      * @param mask Mask control: M5PM1_IRQ_MASK_DISABLE(unmask) / M5PM1_IRQ_MASK_ENABLE(mask)
      * @return 成功返回 M5PM1_OK，否则返回错误码
@@ -1450,7 +1996,8 @@ public:
     m5pm1_err_t irqGetSysMaskAll(uint8_t* mask);
 
     /**
-     * @brief Set single button event interrupt mask / 设置单个按钮事件中断屏蔽
+     * @brief Set single button event interrupt mask
+     *        设置单个按钮事件中断屏蔽
      * @param type Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
      * @param mask Mask control: M5PM1_IRQ_MASK_DISABLE(unmask) / M5PM1_IRQ_MASK_ENABLE(mask)
      * @return 成功返回 M5PM1_OK，否则返回错误码
@@ -1492,13 +2039,7 @@ public:
     // NeoPixel 功能
     // NeoPixel Functions
     // ========================
-    m5pm1_err_t setLedCount(uint8_t count);
-    m5pm1_err_t setLedColor(uint8_t index, uint8_t r, uint8_t g, uint8_t b);
-    m5pm1_err_t setLedColor(uint8_t index, m5pm1_rgb_t color);
-    m5pm1_err_t refreshLeds();
-    m5pm1_err_t disableLeds();
-
-    /**
+        /**
      * @brief Configure NeoPixel in one call / 一键配置 NeoPixel
      * @param count LED count (1-32) / LED 数量
      * @param rgb565Data RGB565 format color data array / RGB565 格式颜色数据数组
@@ -1507,6 +2048,13 @@ public:
      */
     m5pm1_err_t setLeds(const m5pm1_rgb_t* colors, uint8_t arraySize, uint8_t count,
                         bool autoRefresh = true);
+    m5pm1_err_t setLedCount(uint8_t count);
+    m5pm1_err_t setLedColor(uint8_t index, uint8_t r, uint8_t g, uint8_t b);
+    m5pm1_err_t setLedColor(uint8_t index, m5pm1_rgb_t color);
+    m5pm1_err_t refreshLeds();
+    m5pm1_err_t disableLeds();
+
+
 
     // ========================
     // AW8737A 脉冲功能

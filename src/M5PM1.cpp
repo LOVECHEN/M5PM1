@@ -2657,8 +2657,8 @@ m5pm1_err_t M5PM1::set5VInOutEnable(bool enable) {
     return setPowerConfig(M5PM1_PWR_CFG_5V_INOUT, enable ? M5PM1_PWR_CFG_5V_INOUT : 0);
 }
 
-m5pm1_err_t M5PM1::setLedControlEnable(bool enable) {
-    return setPowerConfig(M5PM1_PWR_CFG_LED_CTRL, enable ? M5PM1_PWR_CFG_LED_CTRL : 0);
+m5pm1_err_t M5PM1::setLedEnLevel(bool level) {
+    return setPowerConfig(M5PM1_PWR_CFG_LED_CTRL, level ? M5PM1_PWR_CFG_LED_CTRL : 0);
 }
 
 // ============================
