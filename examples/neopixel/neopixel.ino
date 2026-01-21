@@ -31,21 +31,24 @@ M5PM1 pm1;
 #define PM1_I2C_FREQ M5PM1_I2C_FREQ_100K
 #endif
 
-static const uint8_t LED_COUNT = 8;
+static const uint8_t LED_COUNT  = 8;
 static const uint8_t BRIGHTNESS = 64;
 
-static void printDivider() {
+static void printDivider()
+{
     Serial.println("--------------------------------------------------");
 }
 
-static uint8_t scale(uint8_t v, uint8_t scale) {
+static uint8_t scale(uint8_t v, uint8_t scale)
+{
     // 通过亮度系数缩放颜色，避免过亮。
     // Scale color by brightness to avoid excessive intensity.
     return static_cast<uint8_t>((static_cast<uint16_t>(v) * scale) / 255);
 }
 
-static m5pm1_rgb_t wheel(uint8_t pos) {
-    pos = 255 - pos;
+static m5pm1_rgb_t wheel(uint8_t pos)
+{
+    pos           = 255 - pos;
     m5pm1_rgb_t c = {0, 0, 0};
     if (pos < 85) {
         c.r = 255 - pos * 3;
@@ -68,7 +71,8 @@ static m5pm1_rgb_t wheel(uint8_t pos) {
     return c;
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
     delay(200);
     printDivider();
@@ -96,7 +100,8 @@ void setup() {
     printDivider();
 }
 
-void loop() {
+void loop()
+{
     static uint8_t offset = 0;
 
     for (uint8_t i = 0; i < LED_COUNT; ++i) {

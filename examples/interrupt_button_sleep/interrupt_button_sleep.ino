@@ -38,18 +38,21 @@ M5PM1 pm1;
 #endif
 
 volatile bool irqFlag = false;
-void IRAM_ATTR pm1_irq_handler() {
+void IRAM_ATTR pm1_irq_handler()
+{
     irqFlag = true;
 }
 
 static const m5pm1_gpio_num_t IRQ_GPIO = M5PM1_GPIO_NUM_1;
-static const uint32_t WAKE_TIMER_SEC = 10;
+static const uint32_t WAKE_TIMER_SEC   = 10;
 
-static void printDivider() {
+static void printDivider()
+{
     Serial.println("--------------------------------------------------");
 }
 
-static void printWakeSource(uint8_t src) {
+static void printWakeSource(uint8_t src)
+{
     LOGI("Wake source mask: 0x%02X", src);
     if (src & M5PM1_WAKE_SRC_TIM) LOGI("- TIMER");
     if (src & M5PM1_WAKE_SRC_VIN) LOGI("- VIN");
@@ -60,7 +63,8 @@ static void printWakeSource(uint8_t src) {
     if (src & M5PM1_WAKE_SRC_5VINOUT) LOGI("- 5VINOUT");
 }
 
-static void enterSleep() {
+static void enterSleep()
+{
     LOGW("Prepare for shutdown with wake sources");
 
     // 先配置10s的定时开机
@@ -81,7 +85,8 @@ static void enterSleep() {
     pm1.shutdown();
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
     delay(200);
     printDivider();
@@ -137,7 +142,8 @@ void setup() {
     printDivider();
 }
 
-void loop() {
+void loop()
+{
     if (irqFlag) {
         irqFlag = false;
 

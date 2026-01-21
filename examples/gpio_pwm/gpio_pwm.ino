@@ -43,15 +43,17 @@ M5PM1 pm1;
 #define PM1_I2C_FREQ M5PM1_I2C_FREQ_100K
 #endif
 
-static const m5pm1_gpio_num_t GPIO_OUT = M5PM1_GPIO_NUM_0;
-static const m5pm1_gpio_num_t GPIO_IN = M5PM1_GPIO_NUM_1;
+static const m5pm1_gpio_num_t GPIO_OUT  = M5PM1_GPIO_NUM_0;
+static const m5pm1_gpio_num_t GPIO_IN   = M5PM1_GPIO_NUM_1;
 static const m5pm1_pwm_channel_t PWM_CH = M5PM1_PWM_CH_0;
 
-static void printDivider() {
+static void printDivider()
+{
     Serial.println("--------------------------------------------------");
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(115200);
     delay(200);
     printDivider();
@@ -88,19 +90,20 @@ void setup() {
     printDivider();
 }
 
-void loop() {
+void loop()
+{
     static uint32_t lastBlinkMs = 0;
-    static uint32_t lastLogMs = 0;
-    static uint32_t lastPwmMs = 0;
-    static bool ledOn = false;
-    static int duty = 0;
-    static int step = 2;
+    static uint32_t lastLogMs   = 0;
+    static uint32_t lastPwmMs   = 0;
+    static bool ledOn           = false;
+    static int duty             = 0;
+    static int step             = 2;
 
     uint32_t now = millis();
 
     if (now - lastBlinkMs >= 500) {
         lastBlinkMs = now;
-        ledOn = !ledOn;
+        ledOn       = !ledOn;
         pm1.digitalWrite(GPIO_OUT, ledOn ? HIGH : LOW);
     }
 
@@ -118,7 +121,7 @@ void loop() {
     }
 
     if (now - lastLogMs >= 1000) {
-        lastLogMs = now;
+        lastLogMs   = now;
         int inLevel = pm1.digitalRead(GPIO_IN);
         LOGI("GPIO_IN=%d PWM_DUTY=%d%%", inLevel, duty);
     }
