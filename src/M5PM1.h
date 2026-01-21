@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2025 M5Stack Technology CO LTD
+ * SPDX-FileCopyrightText: 2026 M5Stack Technology CO LTD
  *
  * SPDX-License-Identifier: MIT
  */
@@ -42,52 +42,52 @@
 // Error Codes
 // ============================
 typedef enum {
-    M5PM1_OK = 0,                  // 成功
-                                   // Success
-    M5PM1_FAIL = -1,               // 一般失败
-                                   // General failure
-    M5PM1_ERR_I2C_CONFIG = -2,     // I2C 配置错误 (如频率不支持)
-                                   // I2C configuration error
-    M5PM1_ERR_RULE_VIOLATION = -3, // 条件规则错误 (如引脚冲突，互斥功能)
-                                   // Condition rule violation
-    M5PM1_ERR_INVALID_ARG = -4,    // 无效参数
-                                   // Invalid argument
-    M5PM1_ERR_TIMEOUT = -5,        // 超时
-                                   // Timeout
-    M5PM1_ERR_NOT_SUPPORTED = -6,  // 不支持的功能
-                                   // Function not supported
-    M5PM1_ERR_I2C_COMM = -7,       // I2C 通信错误
-                                   // I2C communication error
-    M5PM1_ERR_NOT_INIT = -8,       // 设备未初始化
-                                   // Device not initialized
-    M5PM1_ERR_INTERNAL = -9,       // 内部错误
-                                   // Internal error
-    M5PM1_ERR_VERIFY_FAILED = -10, // 配置校验失败（读回值与缓存不匹配）
-                                   // Configuration verification failed
+    M5PM1_OK = 0,                   // 成功
+                                    // Success
+    M5PM1_FAIL = -1,                // 一般失败
+                                    // General failure
+    M5PM1_ERR_I2C_CONFIG = -2,      // I2C 配置错误 (如频率不支持)
+                                    // I2C configuration error
+    M5PM1_ERR_RULE_VIOLATION = -3,  // 条件规则错误 (如引脚冲突，互斥功能)
+                                    // Condition rule violation
+    M5PM1_ERR_INVALID_ARG = -4,     // 无效参数
+                                    // Invalid argument
+    M5PM1_ERR_TIMEOUT = -5,         // 超时
+                                    // Timeout
+    M5PM1_ERR_NOT_SUPPORTED = -6,   // 不支持的功能
+                                    // Function not supported
+    M5PM1_ERR_I2C_COMM = -7,        // I2C 通信错误
+                                    // I2C communication error
+    M5PM1_ERR_NOT_INIT = -8,        // 设备未初始化
+                                    // Device not initialized
+    M5PM1_ERR_INTERNAL = -9,        // 内部错误
+                                    // Internal error
+    M5PM1_ERR_VERIFY_FAILED = -10,  // 配置校验失败（读回值与缓存不匹配）
+                                    // Configuration verification failed
 } m5pm1_err_t;
 
 // ============================
 // 设备常量
 // Device Constants
 // ============================
-#define M5PM1_DEFAULT_ADDR          0x6E    // 默认I2C地址 / Default I2C address
-#define M5PM1_MAX_GPIO_PINS         5       // GPIO0-GPIO4，共5个引脚 / GPIO0-GPIO4, total 5 pins
-#define M5PM1_MAX_PWM_CHANNELS      2       // PWM0（GPIO3），PWM1（GPIO4） / PWM0 (GPIO3), PWM1 (GPIO4)
-#define M5PM1_MAX_ADC_CHANNELS      3       // ADC1（GPIO1），ADC2（GPIO2），温度 / ADC1 (GPIO1), ADC2 (GPIO2), TEMP
-#define M5PM1_MAX_LED_COUNT         32      // 最大NeoPixel LED数量 / Maximum NeoPixel LED count
-#define M5PM1_RTC_RAM_SIZE          32      // RTC RAM大小（睡眠保持） / RTC RAM size in bytes (retained in sleep)
+#define M5PM1_DEFAULT_ADDR     0x6E  // 默认I2C地址 / Default I2C address
+#define M5PM1_MAX_GPIO_PINS    5     // GPIO0-GPIO4，共5个引脚 / GPIO0-GPIO4, total 5 pins
+#define M5PM1_MAX_PWM_CHANNELS 2     // PWM0（GPIO3），PWM1（GPIO4） / PWM0 (GPIO3), PWM1 (GPIO4)
+#define M5PM1_MAX_ADC_CHANNELS 3     // ADC1（GPIO1），ADC2（GPIO2），温度 / ADC1 (GPIO1), ADC2 (GPIO2), TEMP
+#define M5PM1_MAX_LED_COUNT    32    // 最大NeoPixel LED数量 / Maximum NeoPixel LED count
+#define M5PM1_RTC_RAM_SIZE     32    // RTC RAM大小（睡眠保持） / RTC RAM size in bytes (retained in sleep)
 
 // ============================
 // I2C 频率常量
 // I2C Frequency Constants
 // ============================
-#define M5PM1_I2C_FREQ_100K         100000  // 标准模式 / Standard mode
-#define M5PM1_I2C_FREQ_400K         400000  // 快速模式 / Fast mode
-#define M5PM1_I2C_FREQ_DEFAULT      M5PM1_I2C_FREQ_100K
+#define M5PM1_I2C_FREQ_100K    100000  // 标准模式 / Standard mode
+#define M5PM1_I2C_FREQ_400K    400000  // 快速模式 / Fast mode
+#define M5PM1_I2C_FREQ_DEFAULT M5PM1_I2C_FREQ_100K
 // I2C 重试参数
 // I2C retry settings
-#define M5PM1_I2C_RETRY_COUNT       2
-#define M5PM1_I2C_RETRY_DELAY_MS    2
+#define M5PM1_I2C_RETRY_COUNT    2
+#define M5PM1_I2C_RETRY_DELAY_MS 2
 
 // ============================
 // 寄存器地址
@@ -96,260 +96,294 @@ typedef enum {
 
 // ---- 系统寄存器 ----
 // ---- System Registers ----
-#define M5PM1_REG_DEVICE_ID         0x00    // R     [7:0] 设备ID / Device ID
-#define M5PM1_REG_DEVICE_MODEL      0x01    // R     [7:0] 设备型号 / Device Model
-#define M5PM1_REG_HW_REV            0x02    // R     [7:0] 硬件版本 / Hardware version
-#define M5PM1_REG_SW_REV            0x03    // R     [7:0] 固件版本 / Software/Firmware version
+#define M5PM1_REG_DEVICE_ID    0x00  // R     [7:0] 设备ID / Device ID
+#define M5PM1_REG_DEVICE_MODEL 0x01  // R     [7:0] 设备型号 / Device Model
+#define M5PM1_REG_HW_REV       0x02  // R     [7:0] 硬件版本 / Hardware version
+#define M5PM1_REG_SW_REV       0x03  // R     [7:0] 固件版本 / Software/Firmware version
 
 // ---- 电源状态寄存器 ----
 // ---- Power Status Registers ----
-#define M5PM1_REG_PWR_SRC           0x04    // R     [2:0] 当前供电源 / Power source
-                                            //       5VIN（USB/DC输入）
-                                            //       0: 5VIN (USB/DC input)
-                                            //       5VINOUT（双向端口）
-                                            //       1: 5VINOUT (bidirectional port)
-                                            //       电池
-                                            //       2: BAT (battery)
-#define M5PM1_REG_WAKE_SRC          0x05    // R/W   [6:0] 唤醒源标志（写0清除） / Wake source flags (write 0 to clear)
-                                            //       [6] 5VINOUT插入唤醒
-                                            //       5VINOUT insertion wake
-                                            //       [5] 外部GPIO唤醒
-                                            //       External GPIO wake
-                                            //       [4] 命令复位唤醒
-                                            //       Command reset wake
-                                            //       [3] 复位按钮唤醒
-                                            //       Reset button wake
-                                            //       [2] 电源按钮唤醒
-                                            //       Power button wake
-                                            //       [1] VIN插入唤醒
-                                            //       VIN insertion wake
-                                            //       [0] 定时器唤醒
-                                            //       Timer wake
+#define M5PM1_REG_PWR_SRC \
+    0x04  // R     [2:0] 当前供电源 / Power source
+          //       5VIN（USB/DC输入）
+          //       0: 5VIN (USB/DC input)
+          //       5VINOUT（双向端口）
+          //       1: 5VINOUT (bidirectional port)
+          //       电池
+          //       2: BAT (battery)
+#define M5PM1_REG_WAKE_SRC \
+    0x05  // R/W   [6:0] 唤醒源标志（写0清除） / Wake source flags (write 0 to clear)
+          //       [6] 5VINOUT插入唤醒
+          //       5VINOUT insertion wake
+          //       [5] 外部GPIO唤醒
+          //       External GPIO wake
+          //       [4] 命令复位唤醒
+          //       Command reset wake
+          //       [3] 复位按钮唤醒
+          //       Reset button wake
+          //       [2] 电源按钮唤醒
+          //       Power button wake
+          //       [1] VIN插入唤醒
+          //       VIN insertion wake
+          //       [0] 定时器唤醒
+          //       Timer wake
 
 // ---- 电源配置 ----
 // ---- Power Configuration ----
-#define M5PM1_REG_PWR_CFG           0x06    // R/W   [7-5] Reserved 保留
-                                            //       [4] LED_EN 默认电平状态: 0=低电平 1=高电平
-                                            //       [3] 5V_INOUT - 5V双向端口: 0=输入模式 1=输出模式(由DCDC供电)
-                                            //       [2] LDO_EN - 3.3V LDO使能: 0=关闭 1=开启
-                                            //       [1] DCDC_EN - 5V DCDC使能: 0=关闭 1=开启
-                                            //       [0] CHG_EN - 充电使能: 0=关闭 1=开启
-                                            //       注意：下载模式或复位事件时自动清零
-                                            //       Note: Auto-clears on download mode or reset events
+#define M5PM1_REG_PWR_CFG \
+    0x06  // R/W   [7-5] Reserved 保留
+          //       [4] LED_EN 默认电平状态: 0=低电平 1=高电平
+          //       [3] 5V_INOUT - 5V双向端口: 0=输入模式 1=输出模式(由DCDC供电)
+          //       [2] LDO_EN - 3.3V LDO使能: 0=关闭 1=开启
+          //       [1] DCDC_EN - 5V DCDC使能: 0=关闭 1=开启
+          //       [0] CHG_EN - 充电使能: 0=关闭 1=开启
+          //       注意：下载模式或复位事件时自动清零
+          //       Note: Auto-clears on download mode or reset events
 
-#define M5PM1_REG_HOLD_CFG          0x07    // R/W   电源保持配置 / Power hold configuration
-                                            //       [7] Reserved 保留
-                                            //       [6] DCDC(5V) - DCDC电源保持
-                                            //       [5] LDO(3.3V) - LDO电源保持
-                                            //       [4] GPIO4 - GPIO4输出状态保持
-                                            //       [3] GPIO3 - GPIO3输出状态保持
-                                            //       [2] GPIO2 - GPIO2输出状态保持
-                                            //       [1] GPIO1 - GPIO1输出状态保持
-                                            //       [0] GPIO0 - GPIO0输出状态保持
-                                            //       注意：复位/下载模式/关机时自动清零为0x00
-                                            //       Note: Auto-clears to 0x00 on reset/download/shutdown
+#define M5PM1_REG_HOLD_CFG \
+    0x07  // R/W   电源保持配置 / Power hold configuration
+          //       [7] Reserved 保留
+          //       [6] DCDC(5V) - DCDC电源保持
+          //       [5] LDO(3.3V) - LDO电源保持
+          //       [4] GPIO4 - GPIO4输出状态保持
+          //       [3] GPIO3 - GPIO3输出状态保持
+          //       [2] GPIO2 - GPIO2输出状态保持
+          //       [1] GPIO1 - GPIO1输出状态保持
+          //       [0] GPIO0 - GPIO0输出状态保持
+          //       注意：复位/下载模式/关机时自动清零为0x00
+          //       Note: Auto-clears to 0x00 on reset/download/shutdown
 
-#define M5PM1_REG_BATT_LVP          0x08    // R/W   电池低压保护阈值 / Battery low voltage protection threshold
-                                            //       电压(mV) = 2000 + n * 7.81
-                                            //       Value = (voltage_mV - 2000) / 7.81
-                                            //       范围：2000mV ~ 4000mV
-                                            //       Range: 2000mV ~ 4000mV
+#define M5PM1_REG_BATT_LVP \
+    0x08  // R/W   电池低压保护阈值 / Battery low voltage protection threshold
+          //       电压(mV) = 2000 + n * 7.81
+          //       Value = (voltage_mV - 2000) / 7.81
+          //       范围：2000mV ~ 4000mV
+          //       Range: 2000mV ~ 4000mV
 
-#define M5PM1_REG_I2C_CFG           0x09    // R/W   I2C配置 / I2C configuration
-                                            //       [7-5] Reserved 保留
-                                            //       [4] SPD - I2C速度: 0=100KHz 1=400KHz
-                                            //       [3:0] SLP_TO - I2C睡眠超时(秒): 0=禁用 1-15=1-15秒
-                                            //       注意：I2C空闲超时后PM1进入睡眠模式
-                                            //       Note: PM1 enters sleep after I2C idle timeout
+#define M5PM1_REG_I2C_CFG \
+    0x09  // R/W   I2C配置 / I2C configuration
+          //       [7-5] Reserved 保留
+          //       [4] SPD - I2C速度: 0=100KHz 1=400KHz
+          //       [3:0] SLP_TO - I2C睡眠超时(秒): 0=禁用 1-15=1-15秒
+          //       注意：I2C空闲超时后PM1进入睡眠模式
+          //       Note: PM1 enters sleep after I2C idle timeout
 
 // ---- 看门狗寄存器 ----
 // ---- Watchdog Registers ----
-#define M5PM1_REG_WDT_CNT           0x0A    // R/W   看门狗倒计时（秒） / Watchdog countdown (seconds)
-                                            //       0=禁用
-                                            //       0 = disabled
-                                            //       1-255=超时秒数
-                                            //       1-255 = timeout in seconds
-                                            //       系统复位当倒计时到0
-                                            //       System resets when countdown reaches 0
-#define M5PM1_REG_WDT_KEY           0x0B    // W     写入0xA5喂狗 / Write 0xA5 to feed watchdog
-#define M5PM1_REG_SYS_CMD           0x0C    // W     系统命令 / System command
-                                            //       密钥必须为0xA
-                                            //       [7:4] KEY must be 0xA
-                                            //       [3:2] Reserved 保留
-                                            //       [1:0] CMD - 00:无操作 01:关机 10:复位 11:下载模式
+#define M5PM1_REG_WDT_CNT \
+    0x0A                        // R/W   看门狗倒计时（秒） / Watchdog countdown (seconds)
+                                //       0=禁用
+                                //       0 = disabled
+                                //       1-255=超时秒数
+                                //       1-255 = timeout in seconds
+                                //       系统复位当倒计时到0
+                                //       System resets when countdown reaches 0
+#define M5PM1_REG_WDT_KEY 0x0B  // W     写入0xA5喂狗 / Write 0xA5 to feed watchdog
+#define M5PM1_REG_SYS_CMD \
+    0x0C  // W     系统命令 / System command
+          //       密钥必须为0xA
+          //       [7:4] KEY must be 0xA
+          //       [3:2] Reserved 保留
+          //       [1:0] CMD - 00:无操作 01:关机 10:复位 11:下载模式
 
 // ---- GPIO寄存器 ----
 // ---- GPIO Registers ----
-#define M5PM1_REG_GPIO_MODE         0x10    // R/W   [4:0] GPIO方向 / GPIO direction
-                                            //       每bit对应一个GPIO: 1=输出 0=输入
-                                            //       Each bit: 1=output, 0=input
-#define M5PM1_REG_GPIO_OUT          0x11    // R/W   [4:0] GPIO输出电平 / GPIO output level
-                                            //       每bit对应一个GPIO: 1=高 0=低
-                                            //       Each bit: 1=high, 0=low
-#define M5PM1_REG_GPIO_IN           0x12    // R     [4:0] GPIO输入状态 / GPIO input state
-                                            //       每bit对应一个GPIO的当前输入电平
-                                            //       Each bit: current input level of GPIO
-#define M5PM1_REG_GPIO_DRV          0x13    // R/W   GPIO驱动模式 / GPIO drive mode
-                                            //       [7-6] Reserved 保留
-                                            //       [5] LED_EN_DRV - LED使能引脚驱动: 0=推挽 1=开漏
-                                            //       GPIO驱动: 1=开漏 0=推挽
-                                            //       [4:0] GPIO drive
-#define M5PM1_REG_GPIO_PUPD0        0x14    // R/W   GPIO0-3上下拉配置 / Pull-up/down for GPIO0-3
-                                            //       每GPIO占2bit: 00=无 01=上拉 10=下拉 11=保留
-                                            //       [7:6] GPIO3, [5:4] GPIO2, [3:2] GPIO1, [1:0] GPIO0
-#define M5PM1_REG_GPIO_PUPD1        0x15    // R/W   GPIO4上下拉配置 / Pull-up/down for GPIO4
-                                            //       [1:0] GPIO4: 00=无 01=上拉 10=下拉 11=保留
-#define M5PM1_REG_GPIO_FUNC0        0x16    // R/W   GPIO0-3功能选择 / GPIO0-3 function
-                                            //       每GPIO占2bit: 00=GPIO 01=IRQ 10=WAKE 11=特殊功能
-                                            //       GPIO0: 11=LED_EN (NeoPixel使能)
-                                            //       GPIO1: 11=ADC1
-                                            //       GPIO2: 11=ADC2
-                                            //       GPIO3: 11=PWM0
-#define M5PM1_REG_GPIO_FUNC1        0x17    // R/W   GPIO4功能选择 / GPIO4 function
-                                            //       [1:0] GPIO4: 00=GPIO 01=IRQ 10=WAKE 11=PWM1
-#define M5PM1_REG_GPIO_WAKE_EN      0x18    // R/W   [4:0] GPIO唤醒使能 / GPIO wake enable
-                                            //       每bit使能对应GPIO的唤醒功能
-                                            //       Each bit enables wake function for corresponding GPIO
-#define M5PM1_REG_GPIO_WAKE_CFG     0x19    // R/W   [4:0] GPIO唤醒边沿配置 / GPIO wake edge config
-                                            //       每bit: 0=下降沿唤醒 1=上升沿唤醒
-                                            //       Each bit: 0=falling edge, 1=rising edge
+#define M5PM1_REG_GPIO_MODE \
+    0x10  // R/W   [4:0] GPIO方向 / GPIO direction
+          //       每bit对应一个GPIO: 1=输出 0=输入
+          //       Each bit: 1=output, 0=input
+#define M5PM1_REG_GPIO_OUT \
+    0x11  // R/W   [4:0] GPIO输出电平 / GPIO output level
+          //       每bit对应一个GPIO: 1=高 0=低
+          //       Each bit: 1=high, 0=low
+#define M5PM1_REG_GPIO_IN \
+    0x12  // R     [4:0] GPIO输入状态 / GPIO input state
+          //       每bit对应一个GPIO的当前输入电平
+          //       Each bit: current input level of GPIO
+#define M5PM1_REG_GPIO_DRV \
+    0x13  // R/W   GPIO驱动模式 / GPIO drive mode
+          //       [7-6] Reserved 保留
+          //       [5] LED_EN_DRV - LED使能引脚驱动: 0=推挽 1=开漏
+          //       GPIO驱动: 1=开漏 0=推挽
+          //       [4:0] GPIO drive
+#define M5PM1_REG_GPIO_PUPD0 \
+    0x14  // R/W   GPIO0-3上下拉配置 / Pull-up/down for GPIO0-3
+          //       每GPIO占2bit: 00=无 01=上拉 10=下拉 11=保留
+          //       [7:6] GPIO3, [5:4] GPIO2, [3:2] GPIO1, [1:0] GPIO0
+#define M5PM1_REG_GPIO_PUPD1 \
+    0x15  // R/W   GPIO4上下拉配置 / Pull-up/down for GPIO4
+          //       [1:0] GPIO4: 00=无 01=上拉 10=下拉 11=保留
+#define M5PM1_REG_GPIO_FUNC0 \
+    0x16  // R/W   GPIO0-3功能选择 / GPIO0-3 function
+          //       每GPIO占2bit: 00=GPIO 01=IRQ 10=WAKE 11=特殊功能
+          //       GPIO0: 11=LED_EN (NeoPixel使能)
+          //       GPIO1: 11=ADC1
+          //       GPIO2: 11=ADC2
+          //       GPIO3: 11=PWM0
+#define M5PM1_REG_GPIO_FUNC1 \
+    0x17  // R/W   GPIO4功能选择 / GPIO4 function
+          //       [1:0] GPIO4: 00=GPIO 01=IRQ 10=WAKE 11=PWM1
+#define M5PM1_REG_GPIO_WAKE_EN \
+    0x18  // R/W   [4:0] GPIO唤醒使能 / GPIO wake enable
+          //       每bit使能对应GPIO的唤醒功能
+          //       Each bit enables wake function for corresponding GPIO
+#define M5PM1_REG_GPIO_WAKE_CFG \
+    0x19  // R/W   [4:0] GPIO唤醒边沿配置 / GPIO wake edge config
+          //       每bit: 0=下降沿唤醒 1=上升沿唤醒
+          //       Each bit: 0=falling edge, 1=rising edge
 
 // ---- 电压读取寄存器 ----
 // ---- Voltage Reading Registers ----
-#define M5PM1_REG_VREF_L            0x20    // R     参考电压低字节 / VREF low byte (mV)
-#define M5PM1_REG_VREF_H            0x21    // R     参考电压高字节 / VREF high byte
-#define M5PM1_REG_VBAT_L            0x22    // R     电池电压低字节 / Battery voltage low byte (mV)
-#define M5PM1_REG_VBAT_H            0x23    // R     电池电压高4位 / Battery voltage high 4 bits
-#define M5PM1_REG_VIN_L             0x24    // R     VIN电压低字节 / VIN voltage low byte (mV)
-#define M5PM1_REG_VIN_H             0x25    // R     VIN电压高4位 / VIN voltage high 4 bits
-#define M5PM1_REG_5VINOUT_L         0x26    // R     5VINOUT电压低字节 / 5VINOUT voltage low byte (mV)
-#define M5PM1_REG_5VINOUT_H         0x27    // R     5VINOUT电压高4位 / 5VINOUT voltage high 4 bits
-#define M5PM1_REG_ADC_RES_L         0x28    // R     ADC结果低字节 / ADC result low byte (mV)
-#define M5PM1_REG_ADC_RES_H         0x29    // R     ADC结果高4位 / ADC result high 4 bits
-#define M5PM1_REG_ADC_CTRL          0x2A    // R/W   ADC控制 / ADC control
-                                            //       [7-4] Reserved 保留
-                                            //       通道: 1=ADC1(GPIO1) 2=ADC2(GPIO2) 6=芯片内部温度
-                                            //       [3:1] Channel
-                                            //       [0] START - 写1启动转换
-                                            //       Write 1 to start conversion
+#define M5PM1_REG_VREF_L    0x20  // R     参考电压低字节 / VREF low byte (mV)
+#define M5PM1_REG_VREF_H    0x21  // R     参考电压高字节 / VREF high byte
+#define M5PM1_REG_VBAT_L    0x22  // R     电池电压低字节 / Battery voltage low byte (mV)
+#define M5PM1_REG_VBAT_H    0x23  // R     电池电压高4位 / Battery voltage high 4 bits
+#define M5PM1_REG_VIN_L     0x24  // R     VIN电压低字节 / VIN voltage low byte (mV)
+#define M5PM1_REG_VIN_H     0x25  // R     VIN电压高4位 / VIN voltage high 4 bits
+#define M5PM1_REG_5VINOUT_L 0x26  // R     5VINOUT电压低字节 / 5VINOUT voltage low byte (mV)
+#define M5PM1_REG_5VINOUT_H 0x27  // R     5VINOUT电压高4位 / 5VINOUT voltage high 4 bits
+#define M5PM1_REG_ADC_RES_L 0x28  // R     ADC结果低字节 / ADC result low byte (mV)
+#define M5PM1_REG_ADC_RES_H 0x29  // R     ADC结果高4位 / ADC result high 4 bits
+#define M5PM1_REG_ADC_CTRL \
+    0x2A  // R/W   ADC控制 / ADC control
+          //       [7-4] Reserved 保留
+          //       通道: 1=ADC1(GPIO1) 2=ADC2(GPIO2) 6=芯片内部温度
+          //       [3:1] Channel
+          //       [0] START - 写1启动转换
+          //       Write 1 to start conversion
 
 // ---- PWM寄存器 ----
 // ---- PWM Registers ----
-#define M5PM1_REG_PWM0_L            0x30    // R/W   PWM0占空比低字节 / PWM0 duty low byte
-#define M5PM1_REG_PWM0_HC           0x31    // R/W   PWM0高字节+控制 / PWM0 high byte + control
-                                            //       [7-6] Reserved 保留
-                                            //       [5] POL - 极性: 0=正常 1=反转
-                                            //       [4] EN - 使能: 0=关闭 1=开启
-                                            //       占空比高4位
-                                            //       [3:0] Duty high 4 bits
-                                            //       12位占空比
-                                            //       12-bit duty: 0-4095 (0-100%)
-#define M5PM1_REG_PWM1_L            0x32    // R/W   PWM1占空比低字节 / PWM1 duty low byte
-#define M5PM1_REG_PWM1_HC           0x33    // R/W   PWM1高字节+控制 / PWM1 high byte + control
-                                            //       格式同PWM0_HC
-                                            //       Same format as PWM0_HC
-#define M5PM1_REG_PWM_FREQ_L        0x34    // R/W   PWM频率低字节 / PWM frequency low byte (Hz)
-#define M5PM1_REG_PWM_FREQ_H        0x35    // R/W   PWM频率高字节 / PWM frequency high byte
-                                            //       范围：1-65535 Hz
-                                            //       Range: 1-65535 Hz
+#define M5PM1_REG_PWM0_L 0x30  // R/W   PWM0占空比低字节 / PWM0 duty low byte
+#define M5PM1_REG_PWM0_HC \
+    0x31                       // R/W   PWM0高字节+控制 / PWM0 high byte + control
+                               //       [7-6] Reserved 保留
+                               //       [5] POL - 极性: 0=正常 1=反转
+                               //       [4] EN - 使能: 0=关闭 1=开启
+                               //       占空比高4位
+                               //       [3:0] Duty high 4 bits
+                               //       12位占空比
+                               //       12-bit duty: 0-4095 (0-100%)
+#define M5PM1_REG_PWM1_L 0x32  // R/W   PWM1占空比低字节 / PWM1 duty low byte
+#define M5PM1_REG_PWM1_HC \
+    0x33                           // R/W   PWM1高字节+控制 / PWM1 high byte + control
+                                   //       格式同PWM0_HC
+                                   //       Same format as PWM0_HC
+#define M5PM1_REG_PWM_FREQ_L 0x34  // R/W   PWM频率低字节 / PWM frequency low byte (Hz)
+#define M5PM1_REG_PWM_FREQ_H \
+    0x35  // R/W   PWM频率高字节 / PWM frequency high byte
+          //       范围：1-65535 Hz
+          //       Range: 1-65535 Hz
 
 // ---- 定时器寄存器 ----
 // ---- Timer Registers ----
-#define M5PM1_REG_TIM_CNT_0         0x38    // R/W   定时器计数字节0 / Timer counter byte 0 (LSB)
-#define M5PM1_REG_TIM_CNT_1         0x39    // R/W   定时器计数字节1 / Timer counter byte 1
-#define M5PM1_REG_TIM_CNT_2         0x3A    // R/W   定时器计数字节2 / Timer counter byte 2
-#define M5PM1_REG_TIM_CNT_3         0x3B    // R/W   定时器计数字节3（bit 6:0，最大31位） / Timer counter byte 3 (bit 6:0, max 31 bits)
-                                            //       31位定时器，单位秒，最大约68年
-                                            //       31-bit timer in seconds, max ~68 years
-#define M5PM1_REG_TIM_CFG           0x3C    // R/W   定时器配置 / Timer configuration
-                                            //       [7-4] Reserved 保留
-                                            //       [3] ARM - 自动重装: 0=单次 1=自动重装
-                                            //       [2:0] ACTION - 超时动作:
-                                            //         000=停止 001=标志 010=复位 011=开机 100=关机
-#define M5PM1_REG_TIM_KEY           0x3D    // W     写入0xA5重载定时器 / Write 0xA5 to reload timer
+#define M5PM1_REG_TIM_CNT_0 0x38  // R/W   定时器计数字节0 / Timer counter byte 0 (LSB)
+#define M5PM1_REG_TIM_CNT_1 0x39  // R/W   定时器计数字节1 / Timer counter byte 1
+#define M5PM1_REG_TIM_CNT_2 0x3A  // R/W   定时器计数字节2 / Timer counter byte 2
+#define M5PM1_REG_TIM_CNT_3 \
+    0x3B  // R/W   定时器计数字节3（bit 6:0，最大31位） / Timer counter byte 3 (bit 6:0, max 31 bits)
+          //       31位定时器，单位秒，最大约68年
+          //       31-bit timer in seconds, max ~68 years
+#define M5PM1_REG_TIM_CFG \
+    0x3C                        // R/W   定时器配置 / Timer configuration
+                                //       [7-4] Reserved 保留
+                                //       [3] ARM - 自动重装: 0=单次 1=自动重装
+                                //       [2:0] ACTION - 超时动作:
+                                //         000=停止 001=标志 010=复位 011=开机 100=关机
+#define M5PM1_REG_TIM_KEY 0x3D  // W     写入0xA5重载定时器 / Write 0xA5 to reload timer
 
 // ---- 中断寄存器 ----
 // ---- IRQ Registers ----
 // 注意：状态寄存器写0清除对应位
 // Note: Write 0 to clear status bits
-#define M5PM1_REG_IRQ_STATUS1       0x40    // R/W   [4:0] GPIO中断状态 / GPIO interrupt status
-                                            //       触发条件：GPIO配置为IRQ功能时的边沿触发
-                                            //       Trigger: Edge trigger when GPIO configured as IRQ
-#define M5PM1_REG_IRQ_STATUS2       0x41    // R/W   系统中断状态 / System interrupt status
-                                            //       [7-6] Reserved 保留
-                                            //       [5] 电池移除
-                                            //       Battery removed
-                                            //       [4] 电池插入
-                                            //       Battery inserted
-                                            //       [3] 5VINOUT移除
-                                            //       5VINOUT removed
-                                            //       [2] 5VINOUT插入
-                                            //       5VINOUT inserted
-                                            //       [1] 5VIN移除
-                                            //       5VIN removed
-                                            //       [0] 5VIN插入
-                                            //       5VIN inserted
-                                            //       备注：电池事件仅充电使能时有效，5VINOUT事件仅输入模式时有效
-                                            //       Note: Battery events only when charging enabled
-                                            //             5VINOUT events only when in input mode
-#define M5PM1_REG_IRQ_STATUS3       0x42    // R/W   按钮中断状态 / Button interrupt status
-                                            //       [7-3] Reserved 保留
-                                            //       [2] 双击事件
-                                            //       Double click event
-                                            //       [1] 唤醒事件
-                                            //       Wakeup event
-                                            //       [0] 单击事件
-                                            //       Single click event
-#define M5PM1_REG_IRQ_MASK1         0x43    // R/W   GPIO中断屏蔽 / GPIO interrupt mask
-                                            //       [4:0] 每bit: 0=使能中断 1=屏蔽中断
-#define M5PM1_REG_IRQ_MASK2         0x44    // R/W   系统中断屏蔽 / System interrupt mask
-#define M5PM1_REG_IRQ_MASK3         0x45    // R/W   按钮中断屏蔽 / Button interrupt mask
+#define M5PM1_REG_IRQ_STATUS1 \
+    0x40  // R/W   [4:0] GPIO中断状态 / GPIO interrupt status
+          //       触发条件：GPIO配置为IRQ功能时的边沿触发
+          //       Trigger: Edge trigger when GPIO configured as IRQ
+#define M5PM1_REG_IRQ_STATUS2 \
+    0x41  // R/W   系统中断状态 / System interrupt status
+          //       [7-6] Reserved 保留
+          //       [5] 电池移除
+          //       Battery removed
+          //       [4] 电池插入
+          //       Battery inserted
+          //       [3] 5VINOUT移除
+          //       5VINOUT removed
+          //       [2] 5VINOUT插入
+          //       5VINOUT inserted
+          //       [1] 5VIN移除
+          //       5VIN removed
+          //       [0] 5VIN插入
+          //       5VIN inserted
+          //       备注：电池事件仅充电使能时有效，5VINOUT事件仅输入模式时有效
+          //       Note: Battery events only when charging enabled
+          //             5VINOUT events only when in input mode
+#define M5PM1_REG_IRQ_STATUS3 \
+    0x42  // R/W   按钮中断状态 / Button interrupt status
+          //       [7-3] Reserved 保留
+          //       [2] 双击事件
+          //       Double click event
+          //       [1] 唤醒事件
+          //       Wakeup event
+          //       [0] 单击事件
+          //       Single click event
+#define M5PM1_REG_IRQ_MASK1 \
+    0x43                          // R/W   GPIO中断屏蔽 / GPIO interrupt mask
+                                  //       [4:0] 每bit: 0=使能中断 1=屏蔽中断
+#define M5PM1_REG_IRQ_MASK2 0x44  // R/W   系统中断屏蔽 / System interrupt mask
+#define M5PM1_REG_IRQ_MASK3 0x45  // R/W   按钮中断屏蔽 / Button interrupt mask
 
 // ---- 按钮寄存器 ----
 // ---- Button Registers ----
-#define M5PM1_REG_BTN_STATUS        0x48    // R     按钮状态 / Button status
-                                            //       [7] BTN_FLAG - 按钮曾被按下标志（读取后自动清除）
-                                            //       [6-1] Reserved 保留
-                                            //       [0] BTN_STATE - 当前按钮状态: 0=释放 1=按下
-#define M5PM1_REG_BTN_CFG_1           0x49    // R/W   按钮配置 / Button configuration
-                                            //       [7] DL_LOCK - 下载模式锁定: 0=正常 1=锁定（禁止进入下载模式）
-                                            //       [6:5] DBL_DLY - 双击间隔: 00=125ms 01=250ms 10=500ms 11=1s
-                                            //       [4:3] LONG_DLY - 长按延时: 00=1s 01=2s 10=3s 11=4s
-                                            //       [2:1] CLK_DLY - 单击延时: 00=125ms 01=250ms 10=500ms 11=1s
-                                            //       [0] SINGLE_RST_DIS - 单击复位禁用: 0=使能 1=禁用
-#define M5PM1_REG_BTN_CFG_2         0x4A    // R/W   按钮配置2 / Button configuration 2
-                                            //       [7-1] Reserved 保留
-                                            //       [0] DOUBLE_OFF_DIS - 双击关机禁用: 0=使能 1=禁用
+#define M5PM1_REG_BTN_STATUS \
+    0x48                          // R     按钮状态 / Button status
+                                  //       [7] BTN_FLAG - 按钮曾被按下标志（读取后自动清除）
+                                  //       [6-1] Reserved 保留
+                                  //       [0] BTN_STATE - 当前按钮状态: 0=释放 1=按下
+#define M5PM1_REG_BTN_CFG_1 0x49  // R/W   按钮配置 / Button configuration
+//       [7] DL_LOCK - 下载模式锁定: 0=正常 1=锁定（禁止进入下载模式）
+//       [6:5] DBL_DLY - 双击间隔: 00=125ms 01=250ms 10=500ms 11=1s
+//       [4:3] LONG_DLY - 长按延时: 00=1s 01=2s 10=3s 11=4s
+//       [2:1] CLK_DLY - 单击延时: 00=125ms 01=250ms 10=500ms 11=1s
+//       [0] SINGLE_RST_DIS - 单击复位禁用: 0=使能 1=禁用
+#define M5PM1_REG_BTN_CFG_2 \
+    0x4A  // R/W   按钮配置2 / Button configuration 2
+          //       [7-1] Reserved 保留
+          //       [0] DOUBLE_OFF_DIS - 双击关机禁用: 0=使能 1=禁用
 
 // ---- NeoPixel寄存器 ----
 // ---- NeoPixel Registers ----
-#define M5PM1_REG_NEO_CFG           0x50    // R/W   NeoPixel配置 / NeoPixel configuration
-                                            //       [7-6] Reserved 保留
-                                            //       [5] REFRESH - 写1刷新LED
-                                            //       Write 1 to refresh LEDs
-                                            //       [4:0] LED_CNT - LED数量 (1-31，5位寄存器限制)
-                                            //       LED count (1-31, 5-bit register limit)
-#define M5PM1_REG_AW8737A_PULSE     0x53    // R/W   AW8737A脉冲控制 / AW8737A pulse control
-                                            //       用于控制AW8737A音频放大器增益
-                                            //       For controlling AW8737A audio amplifier gain
-                                            //       [7] REFRESH - 写1执行脉冲
-                                            //       Write 1 to execute pulse
-                                            //       [6:5] NUM - 脉冲数量: 00=0 01=1 10=2 11=3
-                                            //       [4:0] GPIO - 输出GPIO引脚号
+#define M5PM1_REG_NEO_CFG \
+    0x50  // R/W   NeoPixel配置 / NeoPixel configuration
+          //       [7-6] Reserved 保留
+          //       [5] REFRESH - 写1刷新LED
+          //       Write 1 to refresh LEDs
+          //       [4:0] LED_CNT - LED数量 (1-31，5位寄存器限制)
+          //       LED count (1-31, 5-bit register limit)
+#define M5PM1_REG_AW8737A_PULSE \
+    0x53  // R/W   AW8737A脉冲控制 / AW8737A pulse control
+          //       用于控制AW8737A音频放大器增益
+          //       For controlling AW8737A audio amplifier gain
+          //       [7] REFRESH - 写1执行脉冲
+          //       Write 1 to execute pulse
+          //       [6:5] NUM - 脉冲数量: 00=0 01=1 10=2 11=3
+          //       [4:0] GPIO - 输出GPIO引脚号
 
 // ---- NeoPixel数据区 ----
 // ---- NeoPixel Data Area ----
-#define M5PM1_REG_NEO_DATA_START    0x60    // R/W   数据起始地址 / NeoPixel RGB565 data start
-#define M5PM1_REG_NEO_DATA_END      0x9F    // R/W   数据结束地址 / NeoPixel RGB565 data end
-                                            //       每LED占2字节(RGB565格式), 共32个LED
-                                            //       Each LED: 2 bytes (RGB565), total 32 LEDs
+#define M5PM1_REG_NEO_DATA_START 0x60  // R/W   数据起始地址 / NeoPixel RGB565 data start
+#define M5PM1_REG_NEO_DATA_END \
+    0x9F  // R/W   数据结束地址 / NeoPixel RGB565 data end
+          //       每LED占2字节(RGB565格式), 共32个LED
+          //       Each LED: 2 bytes (RGB565), total 32 LEDs
 
 // ---- RTC RAM区域 ----
 // ---- RTC RAM Area ----
-#define M5PM1_REG_RTC_RAM_START     0xA0    // R/W   RTC RAM起始 / RTC RAM start (32 bytes)
-#define M5PM1_REG_RTC_RAM_END       0xBF    // R/W   RTC RAM结束 / RTC RAM end
-                                            //       睡眠期间数据保持，可用于存储小量重要数据
-                                            //       Data retained during sleep, for storing small important data
+#define M5PM1_REG_RTC_RAM_START 0xA0  // R/W   RTC RAM起始 / RTC RAM start (32 bytes)
+#define M5PM1_REG_RTC_RAM_END \
+    0xBF  // R/W   RTC RAM结束 / RTC RAM end
+          //       睡眠期间数据保持，可用于存储小量重要数据
+          //       Data retained during sleep, for storing small important data
 
 // ============================
 // 位定义
@@ -358,27 +392,29 @@ typedef enum {
 
 // ---- I2C配置寄存器位 ----
 // ---- I2C_CFG Register Bits ----
-#define M5PM1_I2C_CFG_SLEEP_MASK    0x0F        // I2C睡眠超时掩码 / I2C sleep timeout mask
-                                                // 0=禁用 1-15=1-15秒
-#define M5PM1_I2C_CFG_SPEED_400K    (1 << 4)    // I2C速度选择 / I2C speed select
-                                                // 0=100KHz 1=400KHz
+#define M5PM1_I2C_CFG_SLEEP_MASK \
+    0x0F  // I2C睡眠超时掩码 / I2C sleep timeout mask
+          // 0=禁用 1-15=1-15秒
+#define M5PM1_I2C_CFG_SPEED_400K \
+    (1 << 4)  // I2C速度选择 / I2C speed select
+              // 0=100KHz 1=400KHz
 
 // ---- 系统命令寄存器值 ----
 // ---- SYS_CMD Register Values ----
-#define M5PM1_SYS_CMD_KEY           0xA0        // 命令密钥 / Command key (must be 0xA in high nibble)
-#define M5PM1_SYS_CMD_SHUTDOWN      0x01        // 关机命令 / Shutdown command
-#define M5PM1_SYS_CMD_REBOOT        0x02        // 复位命令 / Reboot command
-#define M5PM1_SYS_CMD_JTAG          0x03        // 下载模式命令 / Download mode command
+#define M5PM1_SYS_CMD_KEY      0xA0  // 命令密钥 / Command key (must be 0xA in high nibble)
+#define M5PM1_SYS_CMD_SHUTDOWN 0x01  // 关机命令 / Shutdown command
+#define M5PM1_SYS_CMD_REBOOT   0x02  // 复位命令 / Reboot command
+#define M5PM1_SYS_CMD_JTAG     0x03  // 下载模式命令 / Download mode command
 
 // ---- 密钥值 ----
 // ---- Key Values ----
-#define M5PM1_WDT_FEED_KEY          0xA5        // 喂狗密钥 / Watchdog feed key
-#define M5PM1_TIM_RELOAD_KEY        0xA5        // 定时器重载密钥 / Timer reload key
+#define M5PM1_WDT_FEED_KEY   0xA5  // 喂狗密钥 / Watchdog feed key
+#define M5PM1_TIM_RELOAD_KEY 0xA5  // 定时器重载密钥 / Timer reload key
 
 // ---- NeoPixel配置寄存器位 ----
 // ---- NEO_CFG Register Bits ----
-#define M5PM1_NEO_CFG_REFRESH       (1 << 5)    // 刷新标志 / Refresh flag (write 1 to update LEDs)
-#define M5PM1_NEO_CFG_COUNT_MASK    0x1F        // LED数量掩码 / LED count mask (0-31)
+#define M5PM1_NEO_CFG_REFRESH    (1 << 5)  // 刷新标志 / Refresh flag (write 1 to update LEDs)
+#define M5PM1_NEO_CFG_COUNT_MASK 0x1F      // LED数量掩码 / LED count mask (0-31)
 
 // ============================
 // 枚举类型
@@ -394,18 +430,18 @@ typedef enum {
  *       GPIO4: PWM1功能 / PWM1 function
  */
 typedef enum {
-    M5PM1_GPIO_NUM_0 = 0,       // GPIO0 (可用于LED_EN)
-                                // (can be LED_EN)
-    M5PM1_GPIO_NUM_1 = 1,       // GPIO1 (可用于ADC1)
-                                // (can be ADC1)
-    M5PM1_GPIO_NUM_2 = 2,       // GPIO2 (可用于ADC2)
-                                // (can be ADC2)
-    M5PM1_GPIO_NUM_3 = 3,       // GPIO3 (可用于PWM0)
-                                // (can be PWM0)
-    M5PM1_GPIO_NUM_4 = 4,       // GPIO4 (可用于PWM1)
-                                // (can be PWM1)
-    M5PM1_GPIO_NUM_NC = 255     // 未连接
-                                // Not connected
+    M5PM1_GPIO_NUM_0 = 0,    // GPIO0 (可用于LED_EN)
+                             // (can be LED_EN)
+    M5PM1_GPIO_NUM_1 = 1,    // GPIO1 (可用于ADC1)
+                             // (can be ADC1)
+    M5PM1_GPIO_NUM_2 = 2,    // GPIO2 (可用于ADC2)
+                             // (can be ADC2)
+    M5PM1_GPIO_NUM_3 = 3,    // GPIO3 (可用于PWM0)
+                             // (can be PWM0)
+    M5PM1_GPIO_NUM_4 = 4,    // GPIO4 (可用于PWM1)
+                             // (can be PWM1)
+    M5PM1_GPIO_NUM_NC = 255  // 未连接
+                             // Not connected
 } m5pm1_gpio_num_t;
 
 /**
@@ -429,26 +465,26 @@ typedef enum {
  *       - GPIO4: PWM1 (脉宽调制输出)
  */
 typedef enum {
-    M5PM1_GPIO_FUNC_GPIO = 0b00,    // 普通GPIO功能
-                                    // Normal GPIO function
-    M5PM1_GPIO_FUNC_IRQ = 0b01,     // 中断触发功能
-                                    // Interrupt trigger function
-    M5PM1_GPIO_FUNC_WAKE = 0b10,    // 唤醒功能
-                                    // Wake function
-    M5PM1_GPIO_FUNC_OTHER = 0b11   // 特殊功能(LED/PWM/ADC)
-                                   // Special function
+    M5PM1_GPIO_FUNC_GPIO = 0b00,  // 普通GPIO功能
+                                  // Normal GPIO function
+    M5PM1_GPIO_FUNC_IRQ = 0b01,   // 中断触发功能
+                                  // Interrupt trigger function
+    M5PM1_GPIO_FUNC_WAKE = 0b10,  // 唤醒功能
+                                  // Wake function
+    M5PM1_GPIO_FUNC_OTHER = 0b11  // 特殊功能(LED/PWM/ADC)
+                                  // Special function
 } m5pm1_gpio_func_t;
 
 /**
  * @brief GPIO上下拉配置 / GPIO pull-up/pull-down configuration
  */
 typedef enum {
-    M5PM1_GPIO_PULL_NONE = 0b00,    // 无上下拉
-                                    // No pull
-    M5PM1_GPIO_PULL_UP = 0b01,      // 上拉使能
-                                    // Pull-up enabled
-    M5PM1_GPIO_PULL_DOWN = 0b10     // 下拉使能
-                                    // Pull-down enabled
+    M5PM1_GPIO_PULL_NONE = 0b00,  // 无上下拉
+                                  // No pull
+    M5PM1_GPIO_PULL_UP = 0b01,    // 上拉使能
+                                  // Pull-up enabled
+    M5PM1_GPIO_PULL_DOWN = 0b10   // 下拉使能
+                                  // Pull-down enabled
 } m5pm1_gpio_pull_t;
 
 /**
@@ -465,10 +501,10 @@ typedef enum {
  * @brief GPIO唤醒边沿配置 / GPIO wake edge configuration
  */
 typedef enum {
-    M5PM1_GPIO_WAKE_FALLING = 0,    // 下降沿唤醒
-                                    // Wake on falling edge
-    M5PM1_GPIO_WAKE_RISING = 1      // 上升沿唤醒
-                                    // Wake on rising edge
+    M5PM1_GPIO_WAKE_FALLING = 0,  // 下降沿唤醒
+                                  // Wake on falling edge
+    M5PM1_GPIO_WAKE_RISING = 1    // 上升沿唤醒
+                                  // Wake on rising edge
 } m5pm1_gpio_wake_edge_t;
 
 /**
@@ -477,12 +513,12 @@ typedef enum {
  *       GPIO must be configured as FUNC_OTHER (0b11) to use ADC function
  */
 typedef enum {
-    M5PM1_ADC_CH_1 = 1,             // ADC通道1 (GPIO1)
-                                    // ADC channel 1 (GPIO1)
-    M5PM1_ADC_CH_2 = 2,             // ADC通道2 (GPIO2)
-                                    // ADC channel 2 (GPIO2)
-    M5PM1_ADC_CH_TEMP = 6           // 内部温度传感器
-                                    // Internal temperature sensor
+    M5PM1_ADC_CH_1 = 1,    // ADC通道1 (GPIO1)
+                           // ADC channel 1 (GPIO1)
+    M5PM1_ADC_CH_2 = 2,    // ADC通道2 (GPIO2)
+                           // ADC channel 2 (GPIO2)
+    M5PM1_ADC_CH_TEMP = 6  // 内部温度传感器
+                           // Internal temperature sensor
 } m5pm1_adc_channel_t;
 
 /**
@@ -491,24 +527,24 @@ typedef enum {
  *       GPIO must be configured as FUNC_OTHER (0b11) to use PWM function
  */
 typedef enum {
-    M5PM1_PWM_CH_0 = 0,             // PWM通道0 (GPIO3)
-                                    // PWM channel 0 (GPIO3)
-    M5PM1_PWM_CH_1 = 1              // PWM通道1 (GPIO4)
-                                    // PWM channel 1 (GPIO4)
+    M5PM1_PWM_CH_0 = 0,  // PWM通道0 (GPIO3)
+                         // PWM channel 0 (GPIO3)
+    M5PM1_PWM_CH_1 = 1   // PWM通道1 (GPIO4)
+                         // PWM channel 1 (GPIO4)
 } m5pm1_pwm_channel_t;
 
 /**
  * @brief 当前供电源 / Current power source
  */
 typedef enum {
-    M5PM1_PWR_SRC_5VIN = 0,         // USB/DC 5V输入
-                                    // USB/DC 5V input
-    M5PM1_PWR_SRC_5VINOUT = 1,      // 5V双向端口输入
-                                    // 5V bidirectional port input
-    M5PM1_PWR_SRC_BAT = 2,          // 电池供电
-                                    // Battery power
-    M5PM1_PWR_SRC_UNKNOWN = 3       // 未知/无供电
-                                    // Unknown/no power
+    M5PM1_PWR_SRC_5VIN = 0,     // USB/DC 5V输入
+                                // USB/DC 5V input
+    M5PM1_PWR_SRC_5VINOUT = 1,  // 5V双向端口输入
+                                // 5V bidirectional port input
+    M5PM1_PWR_SRC_BAT = 2,      // 电池供电
+                                // Battery power
+    M5PM1_PWR_SRC_UNKNOWN = 3   // 未知/无供电
+                                // Unknown/no power
 } m5pm1_pwr_src_t;
 
 /**
@@ -517,20 +553,20 @@ typedef enum {
  *       写1清除对应唤醒标志 / Write 1 to clear corresponding flag
  */
 typedef enum {
-    M5PM1_WAKE_SRC_TIM = 0x01,      // 定时器唤醒
-                                    // Timer wake
-    M5PM1_WAKE_SRC_VIN = 0x02,      // VIN插入唤醒
-                                    // VIN insertion wake
-    M5PM1_WAKE_SRC_PWRBTN = 0x04,   // 电源按钮唤醒
-                                    // Power button wake
-    M5PM1_WAKE_SRC_RSTBTN = 0x08,   // 复位按钮唤醒
-                                    // Reset button wake
-    M5PM1_WAKE_SRC_CMD_RST = 0x10,  // 命令复位唤醒
-                                    // Command reset wake
-    M5PM1_WAKE_SRC_EXT_WAKE = 0x20, // 外部GPIO唤醒
-                                    // External GPIO wake
-    M5PM1_WAKE_SRC_5VINOUT = 0x40   // 5VINOUT插入唤醒
-                                    // 5VINOUT insertion wake
+    M5PM1_WAKE_SRC_TIM = 0x01,       // 定时器唤醒
+                                     // Timer wake
+    M5PM1_WAKE_SRC_VIN = 0x02,       // VIN插入唤醒
+                                     // VIN insertion wake
+    M5PM1_WAKE_SRC_PWRBTN = 0x04,    // 电源按钮唤醒
+                                     // Power button wake
+    M5PM1_WAKE_SRC_RSTBTN = 0x08,    // 复位按钮唤醒
+                                     // Reset button wake
+    M5PM1_WAKE_SRC_CMD_RST = 0x10,   // 命令复位唤醒
+                                     // Command reset wake
+    M5PM1_WAKE_SRC_EXT_WAKE = 0x20,  // 外部GPIO唤醒
+                                     // External GPIO wake
+    M5PM1_WAKE_SRC_5VINOUT = 0x40    // 5VINOUT插入唤醒
+                                     // 5VINOUT insertion wake
 } m5pm1_wake_src_t;
 
 /**
@@ -539,56 +575,56 @@ typedef enum {
  *       Command needs to be combined with key (0xA0)
  */
 typedef enum {
-    M5PM1_SYS_CMD_NONE = 0x00,      // 无操作
-                                    // No operation
-    M5PM1_SYS_CMD_OFF = 0x01,       // 关机
-                                    // Shutdown
-    M5PM1_SYS_CMD_RESET = 0x02,     // 复位
-                                    // Reset
-    M5PM1_SYS_CMD_DL = 0x03         // 进入下载模式
-                                    // Enter download mode
+    M5PM1_SYS_CMD_NONE = 0x00,   // 无操作
+                                 // No operation
+    M5PM1_SYS_CMD_OFF = 0x01,    // 关机
+                                 // Shutdown
+    M5PM1_SYS_CMD_RESET = 0x02,  // 复位
+                                 // Reset
+    M5PM1_SYS_CMD_DL = 0x03      // 进入下载模式
+                                 // Enter download mode
 } m5pm1_sys_cmd_t;
 
 /**
  * @brief 定时器超时动作 / Timer timeout action
  */
 typedef enum {
-    M5PM1_TIM_ACTION_STOP = 0b000,      // 停止，无动作
-                                        // Stop, no action
-    M5PM1_TIM_ACTION_FLAG = 0b001,      // 仅设置标志
-                                        // Set flag only
-    M5PM1_TIM_ACTION_REBOOT = 0b010,    // 系统复位
-                                        // System reboot
-    M5PM1_TIM_ACTION_POWERON = 0b011,   // 开机
-                                        // Power on
-    M5PM1_TIM_ACTION_POWEROFF = 0b100   // 关机
-                                        // Power off
+    M5PM1_TIM_ACTION_STOP = 0b000,     // 停止，无动作
+                                       // Stop, no action
+    M5PM1_TIM_ACTION_FLAG = 0b001,     // 仅设置标志
+                                       // Set flag only
+    M5PM1_TIM_ACTION_REBOOT = 0b010,   // 系统复位
+                                       // System reboot
+    M5PM1_TIM_ACTION_POWERON = 0b011,  // 开机
+                                       // Power on
+    M5PM1_TIM_ACTION_POWEROFF = 0b100  // 关机
+                                       // Power off
 } m5pm1_tim_action_t;
 
 /**
  * @brief 按钮事件类型 / Button event type
  */
 typedef enum {
-    M5PM1_BTN_TYPE_CLICK = 0,       // 单击
-                                    // Single click
-    M5PM1_BTN_TYPE_DOUBLE = 1,      // 双击
-                                    // Double click
-    M5PM1_BTN_TYPE_LONG = 2         // 长按
-                                    // Long press
+    M5PM1_BTN_TYPE_CLICK = 0,   // 单击
+                                // Single click
+    M5PM1_BTN_TYPE_DOUBLE = 1,  // 双击
+                                // Double click
+    M5PM1_BTN_TYPE_LONG = 2     // 长按
+                                // Long press
 } m5pm1_btn_type_t;
 
 /**
  * @brief 按钮延时配置 / Button delay/timeout configuration
  */
 typedef enum {
-    M5PM1_BTN_DELAY_125MS = 0,      // 125毫秒
-                                    // 125 milliseconds
-    M5PM1_BTN_DELAY_250MS = 1,      // 250毫秒
-                                    // 250 milliseconds
-    M5PM1_BTN_DELAY_500MS = 2,      // 500毫秒
-                                    // 500 milliseconds
-    M5PM1_BTN_DELAY_1000MS = 3      // 1000毫秒
-                                    // 1000 milliseconds
+    M5PM1_BTN_DELAY_125MS = 0,  // 125毫秒
+                                // 125 milliseconds
+    M5PM1_BTN_DELAY_250MS = 1,  // 250毫秒
+                                // 250 milliseconds
+    M5PM1_BTN_DELAY_500MS = 2,  // 500毫秒
+                                // 500 milliseconds
+    M5PM1_BTN_DELAY_1000MS = 3  // 1000毫秒
+                                // 1000 milliseconds
 } m5pm1_btn_delay_t;
 
 /**
@@ -596,26 +632,26 @@ typedef enum {
  * @note 用于 IRQ_STATUS3 寄存器的位掩码 / For IRQ_STATUS3 register bitmask
  */
 typedef enum {
-    M5PM1_BTN_IRQ_CLICK = 0x01,     // 单击中断 (bit 0)
-                                    // Single click interrupt (bit 0)
-    M5PM1_BTN_IRQ_WAKEUP = 0x02,    // 唤醒中断 (bit 1)
-                                    // Wakeup interrupt (bit 1)
-    M5PM1_BTN_IRQ_DOUBLE = 0x04,    // 双击中断 (bit 2)
-                                    // Double click interrupt (bit 2)
-    M5PM1_BTN_IRQ_ALL = 0x07,       // 所有按钮中断
-                                    // All button interrupts
-    M5PM1_BTN_IRQ_NONE = 0x00       // 无中断
-                                    // No interrupt
+    M5PM1_BTN_IRQ_CLICK = 0x01,   // 单击中断 (bit 0)
+                                  // Single click interrupt (bit 0)
+    M5PM1_BTN_IRQ_WAKEUP = 0x02,  // 唤醒中断 (bit 1)
+                                  // Wakeup interrupt (bit 1)
+    M5PM1_BTN_IRQ_DOUBLE = 0x04,  // 双击中断 (bit 2)
+                                  // Double click interrupt (bit 2)
+    M5PM1_BTN_IRQ_ALL = 0x07,     // 所有按钮中断
+                                  // All button interrupts
+    M5PM1_BTN_IRQ_NONE = 0x00     // 无中断
+                                  // No interrupt
 } m5pm1_btn_irq_t;
 
 /**
  * @brief 中断屏蔽控制类型 / IRQ Mask Control Types
  */
 typedef enum {
-    M5PM1_IRQ_MASK_DISABLE = 0x00, // 不屏蔽中断（允许中断）
-                                   // Don't mask (Enable interrupt)
-    M5PM1_IRQ_MASK_ENABLE = 0x01   // 屏蔽中断（禁止中断）
-                                   // Mask interrupt (Disable interrupt)
+    M5PM1_IRQ_MASK_DISABLE = 0x00,  // 不屏蔽中断（允许中断）
+                                    // Don't mask (Enable interrupt)
+    M5PM1_IRQ_MASK_ENABLE = 0x01    // 屏蔽中断（禁止中断）
+                                    // Mask interrupt (Disable interrupt)
 } m5pm1_irq_mask_ctrl_t;
 
 /**
@@ -625,10 +661,10 @@ typedef enum {
  *       writing config first then re-initializing I2C
  */
 typedef enum {
-    M5PM1_I2C_SPEED_100K = 0,       // 100KHz 标准模式
-                                    // Standard mode
-    M5PM1_I2C_SPEED_400K = 1        // 400KHz 快速模式
-                                    // Fast mode
+    M5PM1_I2C_SPEED_100K = 0,  // 100KHz 标准模式
+                               // Standard mode
+    M5PM1_I2C_SPEED_400K = 1   // 400KHz 快速模式
+                               // Fast mode
 } m5pm1_i2c_speed_t;
 
 // 日志级别定义
@@ -654,24 +690,24 @@ typedef enum {
  *       AW8737A is an audio power amplifier, gain is set by pulse count
  */
 typedef enum {
-    M5PM1_AW8737A_PULSE_0 = 0,      // 0个脉冲 (静音)
-                                    // 0 pulses (mute)
-    M5PM1_AW8737A_PULSE_1 = 1,      // 1个脉冲
-                                    // 1 pulse
-    M5PM1_AW8737A_PULSE_2 = 2,      // 2个脉冲
-                                    // 2 pulses
-    M5PM1_AW8737A_PULSE_3 = 3       // 3个脉冲
-                                    // 3 pulses
+    M5PM1_AW8737A_PULSE_0 = 0,  // 0个脉冲 (静音)
+                                // 0 pulses (mute)
+    M5PM1_AW8737A_PULSE_1 = 1,  // 1个脉冲
+                                // 1 pulse
+    M5PM1_AW8737A_PULSE_2 = 2,  // 2个脉冲
+                                // 2 pulses
+    M5PM1_AW8737A_PULSE_3 = 3   // 3个脉冲
+                                // 3 pulses
 } m5pm1_aw8737a_pulse_t;
 
 /**
  * @brief AW8737A pulse refresh mode / AW8737A脉冲刷新模式
  */
 typedef enum {
-    M5PM1_AW8737A_REFRESH_WAIT = 0, // 等待手动刷新
-                                    // Wait for manual refresh
-    M5PM1_AW8737A_REFRESH_NOW = 1   // 立即执行
-                                    // Execute immediately
+    M5PM1_AW8737A_REFRESH_WAIT = 0,  // 等待手动刷新
+                                     // Wait for manual refresh
+    M5PM1_AW8737A_REFRESH_NOW = 1    // 立即执行
+                                     // Execute immediately
 } m5pm1_aw8737a_refresh_t;
 
 // ============================
@@ -685,12 +721,12 @@ typedef enum {
  *       Used for getWakeSource(), irqGetGpioStatus(), irqGetSysStatus(), irqGetBtnStatus()
  */
 typedef enum {
-    M5PM1_CLEAN_NONE = 0x00,        // 不清除
-                                    // No clean
-    M5PM1_CLEAN_ONCE = 0x01,        // 清除一位（从低位往高位逐个清除）
-                                    // Clean one bit (from low to high, one at a time)
-    M5PM1_CLEAN_ALL = 0x02          // 清除所有位
-                                    // Clean all bits
+    M5PM1_CLEAN_NONE = 0x00,  // 不清除
+                              // No clean
+    M5PM1_CLEAN_ONCE = 0x01,  // 清除一位（从低位往高位逐个清除）
+                              // Clean one bit (from low to high, one at a time)
+    M5PM1_CLEAN_ALL = 0x02    // 清除所有位
+                              // Clean all bits
 } m5pm1_clean_type_t;
 
 // ============================
@@ -704,21 +740,40 @@ typedef enum {
  *       Used for irqGetGpioStatus(), irqClearGpio()
  */
 typedef enum {
-    M5PM1_IRQ_GPIO0 = (1 << 0),     // GPIO0 中断标志
-                                    // GPIO0 interrupt flag
-    M5PM1_IRQ_GPIO1 = (1 << 1),     // GPIO1 中断标志
-                                    // GPIO1 interrupt flag
-    M5PM1_IRQ_GPIO2 = (1 << 2),     // GPIO2 中断标志
-                                    // GPIO2 interrupt flag
-    M5PM1_IRQ_GPIO3 = (1 << 3),     // GPIO3 中断标志
-                                    // GPIO3 interrupt flag
-    M5PM1_IRQ_GPIO4 = (1 << 4),     // GPIO4 中断标志
-                                    // GPIO4 interrupt flag
-    M5PM1_IRQ_GPIO_ALL = 0x1F,      // 所有 GPIO 中断标志
-                                    // All GPIO interrupt flags
-    M5PM1_IRQ_GPIO_NONE = 0x00      // 无中断
-                                    // No interrupt
+    M5PM1_IRQ_GPIO0 = (1 << 0),  // GPIO0 中断标志
+                                 // GPIO0 interrupt flag
+    M5PM1_IRQ_GPIO1 = (1 << 1),  // GPIO1 中断标志
+                                 // GPIO1 interrupt flag
+    M5PM1_IRQ_GPIO2 = (1 << 2),  // GPIO2 中断标志
+                                 // GPIO2 interrupt flag
+    M5PM1_IRQ_GPIO3 = (1 << 3),  // GPIO3 中断标志
+                                 // GPIO3 interrupt flag
+    M5PM1_IRQ_GPIO4 = (1 << 4),  // GPIO4 中断标志
+                                 // GPIO4 interrupt flag
+    M5PM1_IRQ_GPIO_ALL = 0x1F,   // 所有 GPIO 中断标志
+                                 // All GPIO interrupt flags
+    M5PM1_IRQ_GPIO_NONE = 0x00   // 无中断
+                                 // No interrupt
 } m5pm1_irq_gpio_t;
+
+/**
+ * @brief 按钮中断状态位掩码
+ *        Button interrupt status bitmask
+ * @note 用于 irqGetBtnStatus(), irqSetBtnMask(), irqGetBtnMask()
+ *       Used for irqGetBtnStatus(), irqSetBtnMask(), irqGetBtnMask()
+ */
+typedef enum {
+    M5PM1_IRQ_BTN_CLICK = (1 << 0),   // 单击事件
+                                      // Single click event
+    M5PM1_IRQ_BTN_WAKE = (1 << 1),    // 唤醒事件
+                                      // Wakeup event
+    M5PM1_IRQ_BTN_DOUBLE = (1 << 2),  // 双击事件
+                                      // Double click event
+    M5PM1_IRQ_BTN_ALL = 0x07,         // 所有按钮中断标志
+                                      // All button interrupt flags
+    M5PM1_IRQ_BTN_NONE = 0x00         // 无中断
+                                      // No interrupt
+} m5pm1_irq_btn_t;
 
 // ============================
 // 系统中断标志枚举
@@ -731,22 +786,22 @@ typedef enum {
  *       Used for irqGetSysStatus(), irqClearSys()
  */
 typedef enum {
-    M5PM1_IRQ_SYS_5VIN_INSERT = (1 << 0),       // 5VIN 插入
-                                                // 5VIN insertion
-    M5PM1_IRQ_SYS_5VIN_REMOVE = (1 << 1),       // 5VIN 移除
-                                                // 5VIN removal
-    M5PM1_IRQ_SYS_5VINOUT_INSERT = (1 << 2),    // 5VINOUT 插入
-                                                // 5VINOUT insertion
-    M5PM1_IRQ_SYS_5VINOUT_REMOVE = (1 << 3),    // 5VINOUT 移除
-                                                // 5VINOUT removal
-    M5PM1_IRQ_SYS_BAT_INSERT = (1 << 4),        // 电池插入
-                                                // Battery insertion
-    M5PM1_IRQ_SYS_BAT_REMOVE = (1 << 5),        // 电池移除
-                                                // Battery removal
-    M5PM1_IRQ_SYS_ALL = 0x3F,                   // 所有系统中断标志
-                                                // All system interrupt flags
-    M5PM1_IRQ_SYS_NONE = 0x00                   // 无中断
-                                                // No interrupt
+    M5PM1_IRQ_SYS_5VIN_INSERT = (1 << 0),     // 5VIN 插入
+                                              // 5VIN insertion
+    M5PM1_IRQ_SYS_5VIN_REMOVE = (1 << 1),     // 5VIN 移除
+                                              // 5VIN removal
+    M5PM1_IRQ_SYS_5VINOUT_INSERT = (1 << 2),  // 5VINOUT 插入
+                                              // 5VINOUT insertion
+    M5PM1_IRQ_SYS_5VINOUT_REMOVE = (1 << 3),  // 5VINOUT 移除
+                                              // 5VINOUT removal
+    M5PM1_IRQ_SYS_BAT_INSERT = (1 << 4),      // 电池插入
+                                              // Battery insertion
+    M5PM1_IRQ_SYS_BAT_REMOVE = (1 << 5),      // 电池移除
+                                              // Battery removal
+    M5PM1_IRQ_SYS_ALL = 0x3F,                 // 所有系统中断标志
+                                              // All system interrupt flags
+    M5PM1_IRQ_SYS_NONE = 0x00                 // 无中断
+                                              // No interrupt
 } m5pm1_irq_sys_t;
 
 // ============================
@@ -783,10 +838,10 @@ typedef enum {
  *       Used for gpioSetOutput()
  */
 typedef enum {
-    M5PM1_GPIO_STATE_LOW = 0,       // 低电平
-                                    // Low level
-    M5PM1_GPIO_STATE_HIGH = 1       // 高电平
-                                    // High level
+    M5PM1_GPIO_STATE_LOW = 0,  // 低电平
+                               // Low level
+    M5PM1_GPIO_STATE_HIGH = 1  // 高电平
+                               // High level
 } m5pm1_gpio_state_t;
 
 // ============================
@@ -794,10 +849,10 @@ typedef enum {
 // GPIO Level Definitions
 // ============================
 #ifndef LOW
-#define LOW             0
+#define LOW 0
 #endif
 #ifndef HIGH
-#define HIGH            1
+#define HIGH 1
 #endif
 
 // ============================
@@ -805,31 +860,31 @@ typedef enum {
 // GPIO Mode Definitions (Arduino-compatible)
 // ============================
 #ifndef INPUT
-#define INPUT           0x01
+#define INPUT 0x01
 #endif
 #ifndef OUTPUT
-#define OUTPUT          0x03
+#define OUTPUT 0x03
 #endif
 #ifndef PULLUP
-#define PULLUP          0x04
+#define PULLUP 0x04
 #endif
 #ifndef INPUT_PULLUP
-#define INPUT_PULLUP    0x05
+#define INPUT_PULLUP 0x05
 #endif
 #ifndef PULLDOWN
-#define PULLDOWN        0x08
+#define PULLDOWN 0x08
 #endif
 #ifndef INPUT_PULLDOWN
-#define INPUT_PULLDOWN  0x09
+#define INPUT_PULLDOWN 0x09
 #endif
 #ifndef OPEN_DRAIN
-#define OPEN_DRAIN      0x10
+#define OPEN_DRAIN 0x10
 #endif
 #ifndef OUTPUT_OPEN_DRAIN
 #define OUTPUT_OPEN_DRAIN 0x13
 #endif
 #ifndef ANALOG
-#define ANALOG          0xC0
+#define ANALOG 0xC0
 #endif
 
 // ============================
@@ -852,14 +907,14 @@ typedef struct {
  *       This structure maintains software-level pin state to reduce I2C transactions
  */
 typedef struct {
-    m5pm1_gpio_func_t func;       ///< GPIO 功能 / GPIO function (GPIO/IRQ/WAKE/OTHER)
-    m5pm1_gpio_mode_t mode;       ///< 方向 / Direction (INPUT/OUTPUT)
-    uint8_t output;               ///< 输出值 / Output value (0/1)
-    m5pm1_gpio_pull_t pull;       ///< 上下拉 / Pull-up/pull-down (NONE/UP/DOWN)
-    bool wake_en;                 ///< 唤醒使能 / Wake enabled
-    m5pm1_gpio_wake_edge_t wake_edge; ///< 唤醒边沿 / Wake edge (RISING/FALLING)
-    m5pm1_gpio_drive_t drive;     ///< 驱动模式 / Drive mode (PUSHPULL/OPENDRAIN)
-    bool power_hold;              ///< 电源保持状态 / Power hold state
+    m5pm1_gpio_func_t func;            ///< GPIO 功能 / GPIO function (GPIO/IRQ/WAKE/OTHER)
+    m5pm1_gpio_mode_t mode;            ///< 方向 / Direction (INPUT/OUTPUT)
+    uint8_t output;                    ///< 输出值 / Output value (0/1)
+    m5pm1_gpio_pull_t pull;            ///< 上下拉 / Pull-up/pull-down (NONE/UP/DOWN)
+    bool wake_en;                      ///< 唤醒使能 / Wake enabled
+    m5pm1_gpio_wake_edge_t wake_edge;  ///< 唤醒边沿 / Wake edge (RISING/FALLING)
+    m5pm1_gpio_drive_t drive;          ///< 驱动模式 / Drive mode (PUSHPULL/OPENDRAIN)
+    bool power_hold;                   ///< 电源保持状态 / Power hold state
 } m5pm1_pin_status_t;
 
 // ============================
@@ -908,48 +963,48 @@ typedef struct {
 // Snapshot Verification Result
 // ============================
 typedef struct {
-    bool consistent;            // 缓存与寄存器一致时为 true
-                                // True if cached values match registers
-    bool gpio_mismatch;         // GPIO 快照不一致
-                                // GPIO snapshot mismatch
-    bool pwm_mismatch;          // PWM 快照不一致
-                                // PWM snapshot mismatch
-    bool adc_mismatch;          // ADC 快照不一致
-                                // ADC snapshot mismatch
-    bool power_mismatch;        // 电源配置快照不一致
-                                // Power config snapshot mismatch
-    bool button_mismatch;       // 按钮配置快照不一致
-                                // Button config snapshot mismatch
-    bool irq_mask_mismatch;     // IRQ 掩码快照不一致
-                                // IRQ mask snapshot mismatch
-    bool i2c_mismatch;          // I2C 配置快照不一致
-                                // I2C config snapshot mismatch
-    bool neo_mismatch;          // Neo 配置快照不一致
-                                // Neo config snapshot mismatch
-    uint8_t expected_gpio_mode; // 缓存的 GPIO 模式值
-                                // Cached GPIO mode value
-    uint8_t actual_gpio_mode;   // 实际的 GPIO 模式值
-                                // Actual GPIO mode value
-    uint8_t expected_gpio_out;  // 缓存的 GPIO 输出值
-                                // Cached GPIO output value
-    uint8_t actual_gpio_out;    // 实际的 GPIO 输出值
-                                // Actual GPIO output value
-    uint8_t expected_pwr_cfg;   // 缓存的 PWR_CFG 值
-                                // Cached PWR_CFG value
-    uint8_t actual_pwr_cfg;     // 实际的 PWR_CFG 值
-                                // Actual PWR_CFG value
-    uint8_t expected_hold_cfg;  // 缓存的 HOLD_CFG 值
-                                // Cached HOLD_CFG value
-    uint8_t actual_hold_cfg;    // 实际的 HOLD_CFG 值
-                                // Actual HOLD_CFG value
-    uint8_t expected_i2c_cfg;   // 缓存的 I2C_CFG 值
-                                // Cached I2C_CFG value
-    uint8_t actual_i2c_cfg;     // 实际的 I2C_CFG 值
-                                // Actual I2C_CFG value
-    uint8_t expected_neo_cfg;   // 缓存的 NEO_CFG 值
-                                // Cached NEO_CFG value
-    uint8_t actual_neo_cfg;     // 实际的 NEO_CFG 值
-                                // Actual NEO_CFG value
+    bool consistent;             // 缓存与寄存器一致时为 true
+                                 // True if cached values match registers
+    bool gpio_mismatch;          // GPIO 快照不一致
+                                 // GPIO snapshot mismatch
+    bool pwm_mismatch;           // PWM 快照不一致
+                                 // PWM snapshot mismatch
+    bool adc_mismatch;           // ADC 快照不一致
+                                 // ADC snapshot mismatch
+    bool power_mismatch;         // 电源配置快照不一致
+                                 // Power config snapshot mismatch
+    bool button_mismatch;        // 按钮配置快照不一致
+                                 // Button config snapshot mismatch
+    bool irq_mask_mismatch;      // IRQ 掩码快照不一致
+                                 // IRQ mask snapshot mismatch
+    bool i2c_mismatch;           // I2C 配置快照不一致
+                                 // I2C config snapshot mismatch
+    bool neo_mismatch;           // Neo 配置快照不一致
+                                 // Neo config snapshot mismatch
+    uint8_t expected_gpio_mode;  // 缓存的 GPIO 模式值
+                                 // Cached GPIO mode value
+    uint8_t actual_gpio_mode;    // 实际的 GPIO 模式值
+                                 // Actual GPIO mode value
+    uint8_t expected_gpio_out;   // 缓存的 GPIO 输出值
+                                 // Cached GPIO output value
+    uint8_t actual_gpio_out;     // 实际的 GPIO 输出值
+                                 // Actual GPIO output value
+    uint8_t expected_pwr_cfg;    // 缓存的 PWR_CFG 值
+                                 // Cached PWR_CFG value
+    uint8_t actual_pwr_cfg;      // 实际的 PWR_CFG 值
+                                 // Actual PWR_CFG value
+    uint8_t expected_hold_cfg;   // 缓存的 HOLD_CFG 值
+                                 // Cached HOLD_CFG value
+    uint8_t actual_hold_cfg;     // 实际的 HOLD_CFG 值
+                                 // Actual HOLD_CFG value
+    uint8_t expected_i2c_cfg;    // 缓存的 I2C_CFG 值
+                                 // Cached I2C_CFG value
+    uint8_t actual_i2c_cfg;      // 实际的 I2C_CFG 值
+                                 // Actual I2C_CFG value
+    uint8_t expected_neo_cfg;    // 缓存的 NEO_CFG 值
+                                 // Cached NEO_CFG value
+    uint8_t actual_neo_cfg;      // 实际的 NEO_CFG 值
+                                 // Actual NEO_CFG value
 } m5pm1_snapshot_verify_t;
 
 // ============================
@@ -984,9 +1039,9 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t begin(TwoWire *wire = &Wire, uint8_t addr = M5PM1_DEFAULT_ADDR,
-                      int8_t sda = -1, int8_t scl = -1, uint32_t speed = M5PM1_I2C_FREQ_100K);
-#else // ESP-IDF
+    m5pm1_err_t begin(TwoWire* wire = &Wire, uint8_t addr = M5PM1_DEFAULT_ADDR, int8_t sda = -1, int8_t scl = -1,
+                      uint32_t speed = M5PM1_I2C_FREQ_100K);
+#else  // ESP-IDF
     /**
      * @brief Initialize with self-created I2C bus (ESP-IDF)
      * @param port I2C port number
@@ -997,8 +1052,8 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t begin(i2c_port_t port = I2C_NUM_0, uint8_t addr = M5PM1_DEFAULT_ADDR,
-                      int sda = 21, int scl = 22, uint32_t speed = M5PM1_I2C_FREQ_100K);
+    m5pm1_err_t begin(i2c_port_t port = I2C_NUM_0, uint8_t addr = M5PM1_DEFAULT_ADDR, int sda = 21, int scl = 22,
+                      uint32_t speed = M5PM1_I2C_FREQ_100K);
 
     /**
      * @brief Initialize with existing i2c_master_bus handle (ESP-IDF native)
@@ -1019,8 +1074,7 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t begin(i2c_bus_handle_t bus, uint8_t addr = M5PM1_DEFAULT_ADDR,
-                      uint32_t speed = M5PM1_I2C_FREQ_100K);
+    m5pm1_err_t begin(i2c_bus_handle_t bus, uint8_t addr = M5PM1_DEFAULT_ADDR, uint32_t speed = M5PM1_I2C_FREQ_100K);
 #endif
 
     /**
@@ -1180,8 +1234,8 @@ public:
      * @param drive Drive mode: M5PM1_GPIO_DRIVE_PUSHPULL / OPENDRAIN
      * @return M5PM1_OK if successful, error code otherwise
      */
-    m5pm1_err_t gpioSet(m5pm1_gpio_num_t pin, m5pm1_gpio_mode_t mode,
-                        uint8_t value, m5pm1_gpio_pull_t pull, m5pm1_gpio_drive_t drive);
+    m5pm1_err_t gpioSet(m5pm1_gpio_num_t pin, m5pm1_gpio_mode_t mode, uint8_t value, m5pm1_gpio_pull_t pull,
+                        m5pm1_gpio_drive_t drive);
 
     /**
      * @brief 设置 GPIO 功能模式
@@ -1410,7 +1464,8 @@ public:
      * @brief 读取 ADC 通道值
      *        Read ADC channel value
      * @param channel ADC 通道：M5PM1_ADC_CH_1 (GPIO1) / M5PM1_ADC_CH_2 (GPIO2) / M5PM1_ADC_CH_TEMP (温度传感器)
-     *                ADC channel: M5PM1_ADC_CH_1 (GPIO1) / M5PM1_ADC_CH_2 (GPIO2) / M5PM1_ADC_CH_TEMP (temperature sensor)
+     *                ADC channel: M5PM1_ADC_CH_1 (GPIO1) / M5PM1_ADC_CH_2 (GPIO2) / M5PM1_ADC_CH_TEMP (temperature
+     * sensor)
      * @param value 输出参数，存储读取的 ADC 值 (0-4095, 12位)
      *              Output parameter, stores the read ADC value (0-4095, 12-bit)
      * @return 成功返回 M5PM1_OK，否则返回错误码
@@ -1498,8 +1553,7 @@ public:
      * @note GPIO 必须配置为 FUNC_OTHER 才能使用 PWM 功能
      *       GPIO must be configured as FUNC_OTHER to use PWM function
      */
-    m5pm1_err_t setPwmDuty(m5pm1_pwm_channel_t channel, uint8_t duty,
-                           bool polarity = false, bool enable = true);
+    m5pm1_err_t setPwmDuty(m5pm1_pwm_channel_t channel, uint8_t duty, bool polarity = false, bool enable = true);
 
     /**
      * @brief 获取 PWM 占空比（百分比 0-100）
@@ -1515,8 +1569,7 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t getPwmDuty(m5pm1_pwm_channel_t channel, uint8_t* duty,
-                           bool* polarity, bool* enable);
+    m5pm1_err_t getPwmDuty(m5pm1_pwm_channel_t channel, uint8_t* duty, bool* polarity, bool* enable);
 
     /**
      * @brief 设置 PWM 占空比（12位精度）
@@ -1534,8 +1587,8 @@ public:
      * @note GPIO 必须配置为 FUNC_OTHER 才能使用 PWM 功能
      *       GPIO must be configured as FUNC_OTHER to use PWM function
      */
-    m5pm1_err_t setPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t duty12,
-                               bool polarity = false, bool enable = true);
+    m5pm1_err_t setPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t duty12, bool polarity = false,
+                                bool enable = true);
 
     /**
      * @brief 获取 PWM 占空比（12位精度）
@@ -1551,8 +1604,7 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t getPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t* duty12,
-                               bool* polarity, bool* enable);
+    m5pm1_err_t getPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t* duty12, bool* polarity, bool* enable);
     /**
      * @brief Configure PWM in one call
      *        一次性配置 PWM 参数
@@ -1573,8 +1625,8 @@ public:
      * @note Changing frequency affects all channels
      *       变更频率会影响所有通道
      */
-    m5pm1_err_t setPwmConfig(m5pm1_pwm_channel_t channel, bool enable, bool polarity,
-                            uint16_t frequency, uint16_t duty12);
+    m5pm1_err_t setPwmConfig(m5pm1_pwm_channel_t channel, bool enable, bool polarity, uint16_t frequency,
+                             uint16_t duty12);
 
     /**
      * @brief 设置 PWM 输出（Arduino 兼容）
@@ -1657,8 +1709,9 @@ public:
     /**
      * @brief 获取当前电源来源
      *        Get current power source
-     * @param src 输出参数，存储电源来源：M5PM1_PWR_SRC_5VIN / M5PM1_PWR_SRC_5VINOUT / M5PM1_PWR_SRC_BAT / M5PM1_PWR_SRC_UNKNOWN
-     *            Output parameter, stores power source: M5PM1_PWR_SRC_5VIN / M5PM1_PWR_SRC_5VINOUT / M5PM1_PWR_SRC_BAT / M5PM1_PWR_SRC_UNKNOWN
+     * @param src 输出参数，存储电源来源：M5PM1_PWR_SRC_5VIN / M5PM1_PWR_SRC_5VINOUT / M5PM1_PWR_SRC_BAT /
+     * M5PM1_PWR_SRC_UNKNOWN Output parameter, stores power source: M5PM1_PWR_SRC_5VIN / M5PM1_PWR_SRC_5VINOUT /
+     * M5PM1_PWR_SRC_BAT / M5PM1_PWR_SRC_UNKNOWN
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
@@ -1860,7 +1913,8 @@ public:
      * @brief 配置按钮事件类型和延时
      *        Configure button event type and delay
      * @param type 按钮事件类型：M5PM1_BTN_TYPE_CLICK (单击) / M5PM1_BTN_TYPE_DOUBLE (双击) / M5PM1_BTN_TYPE_LONG (长按)
-     *             Button event type: M5PM1_BTN_TYPE_CLICK (single click) / M5PM1_BTN_TYPE_DOUBLE (double click) / M5PM1_BTN_TYPE_LONG (long press)
+     *             Button event type: M5PM1_BTN_TYPE_CLICK (single click) / M5PM1_BTN_TYPE_DOUBLE (double click) /
+     * M5PM1_BTN_TYPE_LONG (long press)
      * @param delay 延时配置：M5PM1_BTN_DELAY_125MS / 250MS / 500MS / 1000MS
      *              Delay configuration: M5PM1_BTN_DELAY_125MS / 250MS / 500MS / 1000MS
      *              注意：长按类型的实际延时为 1s/2s/3s/4s（对应枚举值 0/1/2/3）
@@ -2052,8 +2106,7 @@ public:
      * @note 如果没有中断，返回 M5PM1_IRQ_GPIO_NONE
      *       Returns M5PM1_IRQ_GPIO_NONE if no interrupt
      */
-    m5pm1_err_t irqGetGpioStatusEnum(m5pm1_irq_gpio_t* gpio_num,
-                                      m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+    m5pm1_err_t irqGetGpioStatusEnum(m5pm1_irq_gpio_t* gpio_num, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
      * @brief 读取系统中断状态（返回枚举值，用户友好）
@@ -2077,8 +2130,7 @@ public:
      * @note 如果没有中断，返回 M5PM1_IRQ_SYS_NONE
      *       Returns M5PM1_IRQ_SYS_NONE if no interrupt
      */
-    m5pm1_err_t irqGetSysStatusEnum(m5pm1_irq_sys_t* sys_irq,
-                                     m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+    m5pm1_err_t irqGetSysStatusEnum(m5pm1_irq_sys_t* sys_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
      * @brief 读取按钮中断状态（返回枚举值，用户友好）
@@ -2102,9 +2154,7 @@ public:
      * @note 如果没有中断，返回 M5PM1_BTN_IRQ_NONE
      *       Returns M5PM1_BTN_IRQ_NONE if no interrupt
      */
-    m5pm1_err_t irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq,
-                                     m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
-
+    m5pm1_err_t irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
      * @brief Set single GPIO pin interrupt mask
@@ -2122,7 +2172,8 @@ public:
      * @param pin GPIO 引脚号 (0-4)
      *            GPIO pin number (0-4)
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
-     *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE (masked)
+     *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
+     * (masked)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
@@ -2162,7 +2213,8 @@ public:
      * @param event 事件位 (0-5): 0=5VIN_IN, 1=5VIN_OUT, 2=5VINOUT_IN, 3=5VINOUT_OUT, 4=BAT_IN, 5=BAT_OUT
      *              Event bit (0-5): 0=5VIN_IN, 1=5VIN_OUT, 2=5VINOUT_IN, 3=5VINOUT_OUT, 4=BAT_IN, 5=BAT_OUT
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
-     *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE (masked)
+     *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
+     * (masked)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
@@ -2202,7 +2254,8 @@ public:
      * @param type 按钮事件类型：M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
      *             Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
-     *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE (masked)
+     *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
+     * (masked)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
@@ -2297,8 +2350,7 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t setLeds(const m5pm1_rgb_t* colors, uint8_t arraySize, uint8_t count,
-                        bool autoRefresh = true);
+    m5pm1_err_t setLeds(const m5pm1_rgb_t* colors, uint8_t arraySize, uint8_t count, bool autoRefresh = true);
 
     /**
      * @brief 设置 NeoPixel LED 数量
@@ -2364,8 +2416,6 @@ public:
      */
     m5pm1_err_t disableLeds();
 
-
-
     // ========================
     // AW8737A 脉冲功能
     // AW8737A Pulse Functions
@@ -2383,7 +2433,7 @@ public:
      *         Return M5PM1_OK on success, error code otherwise
      */
     m5pm1_err_t setAw8737aPulse(m5pm1_gpio_num_t pin, m5pm1_aw8737a_pulse_t num,
-                               m5pm1_aw8737a_refresh_t refresh = M5PM1_AW8737A_REFRESH_NOW);
+                                m5pm1_aw8737a_refresh_t refresh = M5PM1_AW8737A_REFRESH_NOW);
     /**
      * @brief 刷新 AW8737A 脉冲配置
      *        Refresh AW8737A pulse configuration
@@ -2444,8 +2494,7 @@ public:
      * @note 切换到 400KHz 后需要重新初始化 I2C 总线
      *       Need to re-initialize I2C bus after switching to 400KHz
      */
-    m5pm1_err_t setI2cConfig(uint8_t sleepTime,
-                             m5pm1_i2c_speed_t speed = M5PM1_I2C_SPEED_100K);
+    m5pm1_err_t setI2cConfig(uint8_t sleepTime, m5pm1_i2c_speed_t speed = M5PM1_I2C_SPEED_100K);
 
     /**
      * @brief 切换 I2C 速度
@@ -2738,10 +2787,10 @@ private:
     // Pin 状态缓存
     // Pin status cache
     m5pm1_pin_status_t _pinStatus[M5PM1_MAX_GPIO_PINS];  // Cached status for GPIO0-4
-    bool _cacheValid;  // 缓存有效性标志 / Cache validity flag
+    bool _cacheValid;                                    // 缓存有效性标志 / Cache validity flag
 
 #ifdef ARDUINO
-    TwoWire *_wire;
+    TwoWire* _wire;
     int8_t _sda;
     int8_t _scl;
 #else
@@ -2820,4 +2869,4 @@ private:
     bool _readBtnStatus(uint8_t* rawValue);
 };
 
-#endif // _M5PM1_H_
+#endif  // _M5PM1_H_
