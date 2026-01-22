@@ -2164,28 +2164,31 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqSetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t mask);
+    m5pm1_err_t irqSetGpioMask(m5pm1_irq_gpio_t pin, m5pm1_irq_mask_ctrl_t mask);
 
     /**
      * @brief 获取单个 GPIO 引脚中断屏蔽状态
      *        Get single GPIO pin interrupt mask state
-     * @param pin GPIO 引脚号 (0-4)
-     *            GPIO pin number (0-4)
+     * @param gpio GPIO 中断标志位 (M5PM1_IRQ_GPIO0 ~ M5PM1_IRQ_GPIO4)
+     *             GPIO interrupt flag (M5PM1_IRQ_GPIO0 ~ M5PM1_IRQ_GPIO4)
+     * @note 不支持 M5PM1_IRQ_GPIO_ALL / M5PM1_IRQ_GPIO_NONE，请使用 irqGetGpioMaskBits()
+     *       M5PM1_IRQ_GPIO_ALL / M5PM1_IRQ_GPIO_NONE not supported, use irqGetGpioMaskBits()
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
      *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
      * (masked)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t* mask);
+    m5pm1_err_t irqGetGpioMask(m5pm1_irq_gpio_t gpio, m5pm1_irq_mask_ctrl_t* mask);
 
     /**
      * @brief 一次性设置所有 GPIO 中断屏蔽 / Set all GPIO interrupt mask at once
-     * @param mask 所有 GPIO 引脚的位掩码 / Bitmask for all GPIO pins
+     * @param mask 屏蔽控制：M5PM1_IRQ_MASK_DISABLE (全部不屏蔽) / M5PM1_IRQ_MASK_ENABLE (全部屏蔽)
+     *             Mask control: M5PM1_IRQ_MASK_DISABLE (unmask all) / M5PM1_IRQ_MASK_ENABLE (mask all)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqSetGpioMaskAll(uint8_t mask);
+    m5pm1_err_t irqSetGpioMaskAll(m5pm1_irq_mask_ctrl_t mask);
 
     /**
      * @brief 获取所有 GPIO 中断屏蔽状态
@@ -2195,38 +2198,44 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetGpioMaskAll(uint8_t* mask);
+    m5pm1_err_t irqGetGpioMaskBits(uint8_t* mask);
 
     /**
      * @brief Set single system event interrupt mask
      *        设置单个系统事件中断屏蔽
-     * @param event Event bit (0-5): 0=5VIN_IN, 1=5VIN_OUT, 2=5VINOUT_IN, 3=5VINOUT_OUT, 4=BAT_IN, 5=BAT_OUT
+     * @param event 系统事件枚举 (M5PM1_IRQ_SYS_5VIN_INSERT ~ M5PM1_IRQ_SYS_BAT_REMOVE)
+     *              System event enum (M5PM1_IRQ_SYS_5VIN_INSERT ~ M5PM1_IRQ_SYS_BAT_REMOVE)
+     * @note 不支持 M5PM1_IRQ_SYS_ALL / M5PM1_IRQ_SYS_NONE，请使用 irqSetSysMaskAll()
+     *       M5PM1_IRQ_SYS_ALL / M5PM1_IRQ_SYS_NONE not supported, use irqSetSysMaskAll()
      * @param mask Mask control: M5PM1_IRQ_MASK_DISABLE(unmask) / M5PM1_IRQ_MASK_ENABLE(mask)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqSetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t mask);
+    m5pm1_err_t irqSetSysMask(m5pm1_irq_sys_t event, m5pm1_irq_mask_ctrl_t mask);
 
     /**
      * @brief 获取单个系统事件中断屏蔽状态
      *        Get single system event interrupt mask state
-     * @param event 事件位 (0-5): 0=5VIN_IN, 1=5VIN_OUT, 2=5VINOUT_IN, 3=5VINOUT_OUT, 4=BAT_IN, 5=BAT_OUT
-     *              Event bit (0-5): 0=5VIN_IN, 1=5VIN_OUT, 2=5VINOUT_IN, 3=5VINOUT_OUT, 4=BAT_IN, 5=BAT_OUT
+     * @param event 系统事件枚举 (M5PM1_IRQ_SYS_5VIN_INSERT ~ M5PM1_IRQ_SYS_BAT_REMOVE)
+     *              System event enum (M5PM1_IRQ_SYS_5VIN_INSERT ~ M5PM1_IRQ_SYS_BAT_REMOVE)
+     * @note 不支持 M5PM1_IRQ_SYS_ALL / M5PM1_IRQ_SYS_NONE，请使用 irqGetSysMaskBits()
+     *       M5PM1_IRQ_SYS_ALL / M5PM1_IRQ_SYS_NONE not supported, use irqGetSysMaskBits()
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
      *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
      * (masked)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t* mask);
+    m5pm1_err_t irqGetSysMask(m5pm1_irq_sys_t event, m5pm1_irq_mask_ctrl_t* mask);
 
     /**
      * @brief 一次性设置所有系统中断屏蔽 / Set all system interrupt mask at once
-     * @param mask 所有系统事件的位掩码 / Bitmask for all system events
+     * @param mask 屏蔽控制：M5PM1_IRQ_MASK_DISABLE (全部不屏蔽) / M5PM1_IRQ_MASK_ENABLE (全部屏蔽)
+     *             Mask control: M5PM1_IRQ_MASK_DISABLE (unmask all) / M5PM1_IRQ_MASK_ENABLE (mask all)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqSetSysMaskAll(uint8_t mask);
+    m5pm1_err_t irqSetSysMaskAll(m5pm1_irq_mask_ctrl_t mask);
 
     /**
      * @brief 获取所有系统中断屏蔽状态
@@ -2236,12 +2245,15 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetSysMaskAll(uint8_t* mask);
+    m5pm1_err_t irqGetSysMaskBits(uint8_t* mask);
 
     /**
      * @brief Set single button event interrupt mask
      *        设置单个按钮事件中断屏蔽
-     * @param type Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
+     * @param type 按钮事件类型：M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
+     *             Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
+     * @note 不支持 M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE，请使用 irqSetBtnMaskAll()
+     *       M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE not supported, use irqSetBtnMaskAll()
      * @param mask Mask control: M5PM1_IRQ_MASK_DISABLE(unmask) / M5PM1_IRQ_MASK_ENABLE(mask)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
@@ -2253,6 +2265,8 @@ public:
      *        Get single button event interrupt mask state
      * @param type 按钮事件类型：M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
      *             Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
+     * @note 不支持 M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE，请使用 irqGetBtnMaskBits()
+     *       M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE not supported, use irqGetBtnMaskBits()
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
      *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
      * (masked)
@@ -2263,11 +2277,12 @@ public:
 
     /**
      * @brief 一次性设置所有按钮中断屏蔽 / Set all button interrupt mask at once
-     * @param mask 所有按钮事件的位掩码 / Bitmask for all button events
+     * @param mask 屏蔽控制：M5PM1_IRQ_MASK_DISABLE (全部不屏蔽) / M5PM1_IRQ_MASK_ENABLE (全部屏蔽)
+     *             Mask control: M5PM1_IRQ_MASK_DISABLE (unmask all) / M5PM1_IRQ_MASK_ENABLE (mask all)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqSetBtnMaskAll(uint8_t mask);
+    m5pm1_err_t irqSetBtnMaskAll(m5pm1_irq_mask_ctrl_t mask);
     /**
      * @brief 获取所有按钮中断屏蔽状态
      *        Get all button interrupt mask state
@@ -2276,7 +2291,7 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetBtnMaskAll(uint8_t* mask);
+    m5pm1_err_t irqGetBtnMaskBits(uint8_t* mask);
 
     // ========================
     // 系统命令

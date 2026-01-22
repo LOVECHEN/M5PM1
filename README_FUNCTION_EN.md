@@ -98,9 +98,10 @@ Feature overview of the PM1 power management driver library for Arduino/ESP-IDF.
 - **Enum-style read**
   - `irqGetGpioStatusEnum`/`irqGetSysStatusEnum`/`irqGetBtnStatusEnum`
 - **Interrupt masks**
-  - `irqSetGpioMask`/`irqGetGpioMask`/`irqSetGpioMaskAll`/`irqGetGpioMaskAll`
-  - `irqSetSysMask`/`irqGetSysMask`/`irqSetSysMaskAll`/`irqGetSysMaskAll`
-  - `irqSetBtnMask`/`irqGetBtnMask`/`irqSetBtnMaskAll`/`irqGetBtnMaskAll`
+  - GPIO: `irqSetGpioMask(m5pm1_irq_gpio_t, m5pm1_irq_mask_ctrl_t)`/`irqGetGpioMask`/`irqSetGpioMaskAll(m5pm1_irq_mask_ctrl_t)`/`irqGetGpioMaskBits`
+  - System: `irqSetSysMask(m5pm1_irq_sys_t, m5pm1_irq_mask_ctrl_t)`/`irqGetSysMask`/`irqSetSysMaskAll(m5pm1_irq_mask_ctrl_t)`/`irqGetSysMaskBits`
+  - Button: `irqSetBtnMask(m5pm1_btn_irq_t, m5pm1_irq_mask_ctrl_t)`/`irqGetBtnMask`/`irqSetBtnMaskAll(m5pm1_irq_mask_ctrl_t)`/`irqGetBtnMaskBits`
+  - Note: Single set interfaces do not support `ALL`/`NONE` enum values, use `xxxMaskAll()` for batch operations
 
 ### 12) System Commands
 

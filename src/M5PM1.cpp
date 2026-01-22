@@ -3354,9 +3354,20 @@ m5pm1_err_t M5PM1::irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_typ
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqSetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t mask)
+m5pm1_err_t M5PM1::irqSetGpioMask(m5pm1_irq_gpio_t gpio, m5pm1_irq_mask_ctrl_t mask)
 {
-    if (!_isValidPin(pin)) return M5PM1_ERR_INVALID_ARG;
+    // 不支持 ALL / NONE
+    // ALL / NONE not supported
+    if (gpio == M5PM1_IRQ_GPIO_ALL || gpio == M5PM1_IRQ_GPIO_NONE) {
+        M5PM1_LOG_E(TAG, "ALL/NONE not supported");
+        return M5PM1_ERR_NOT_SUPPORTED;
+    }
+    // 验证参数：gpio 必须是有效的单个 GPIO 位掩码 (bit[4:0])
+    // Validate parameter: gpio must be a valid single GPIO bitmask (bit[4:0])
+    if (gpio != M5PM1_IRQ_GPIO0 && gpio != M5PM1_IRQ_GPIO1 && gpio != M5PM1_IRQ_GPIO2 && gpio != M5PM1_IRQ_GPIO3 &&
+        gpio != M5PM1_IRQ_GPIO4) {
+        return M5PM1_ERR_INVALID_ARG;
+    }
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
@@ -3365,10 +3376,12 @@ m5pm1_err_t M5PM1::irqSetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t ma
     uint8_t regVal;
     if (!_readReg(M5PM1_REG_IRQ_MASK1, &regVal)) return M5PM1_ERR_I2C_COMM;
 
+    // 直接使用位掩码操作
+    // Use bitmask operation directly
     if (mask == M5PM1_IRQ_MASK_ENABLE) {
-        regVal |= (1 << pin);
+        regVal |= (uint8_t)gpio;
     } else {
-        regVal &= ~(1 << pin);
+        regVal &= ~(uint8_t)gpio;
     }
 
     bool ok = _writeReg(M5PM1_REG_IRQ_MASK1, regVal);
@@ -3379,10 +3392,21 @@ m5pm1_err_t M5PM1::irqSetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t ma
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t* mask)
+m5pm1_err_t M5PM1::irqGetGpioMask(m5pm1_irq_gpio_t gpio, m5pm1_irq_mask_ctrl_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
-    if (!_isValidPin(pin)) return M5PM1_ERR_INVALID_ARG;
+    // 不支持 ALL / NONE
+    // ALL / NONE not supported
+    if (gpio == M5PM1_IRQ_GPIO_ALL || gpio == M5PM1_IRQ_GPIO_NONE) {
+        M5PM1_LOG_E(TAG, "ALL/NONE not supported");
+        return M5PM1_ERR_NOT_SUPPORTED;
+    }
+    // 验证参数：gpio 必须是有效的单个 GPIO 位掩码 (bit[4:0])
+    // Validate parameter: gpio must be a valid single GPIO bitmask (bit[4:0])
+    if (gpio != M5PM1_IRQ_GPIO0 && gpio != M5PM1_IRQ_GPIO1 && gpio != M5PM1_IRQ_GPIO2 && gpio != M5PM1_IRQ_GPIO3 &&
+        gpio != M5PM1_IRQ_GPIO4) {
+        return M5PM1_ERR_INVALID_ARG;
+    }
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
@@ -3391,17 +3415,22 @@ m5pm1_err_t M5PM1::irqGetGpioMask(m5pm1_gpio_num_t pin, m5pm1_irq_mask_ctrl_t* m
     uint8_t regVal;
     if (!_readReg(M5PM1_REG_IRQ_MASK1, &regVal)) return M5PM1_ERR_I2C_COMM;
 
-    *mask = (m5pm1_irq_mask_ctrl_t)((regVal >> pin) & 0x01);
+    // 直接使用位掩码检查
+    // Use bitmask check directly
+    *mask = (regVal & (uint8_t)gpio) ? M5PM1_IRQ_MASK_ENABLE : M5PM1_IRQ_MASK_DISABLE;
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqSetGpioMaskAll(uint8_t mask)
+m5pm1_err_t M5PM1::irqSetGpioMaskAll(m5pm1_irq_mask_ctrl_t mask)
 {
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
     }
-    bool ok = _writeReg(M5PM1_REG_IRQ_MASK1, mask & 0x1F);
+    // GPIO 中断屏蔽寄存器有效位为 bit[4:0]，共5个GPIO
+    // GPIO interrupt mask register valid bits are bit[4:0], 5 GPIOs total
+    uint8_t regVal = (mask == M5PM1_IRQ_MASK_ENABLE) ? 0x1F : 0x00;
+    bool ok        = _writeReg(M5PM1_REG_IRQ_MASK1, regVal);
     if (!ok) {
         return M5PM1_ERR_I2C_COMM;
     }
@@ -3409,7 +3438,7 @@ m5pm1_err_t M5PM1::irqSetGpioMaskAll(uint8_t mask)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetGpioMaskAll(uint8_t* mask)
+m5pm1_err_t M5PM1::irqGetGpioMaskBits(uint8_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
     if (!_initialized) {
@@ -3420,9 +3449,21 @@ m5pm1_err_t M5PM1::irqGetGpioMaskAll(uint8_t* mask)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqSetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t mask)
+m5pm1_err_t M5PM1::irqSetSysMask(m5pm1_irq_sys_t event, m5pm1_irq_mask_ctrl_t mask)
 {
-    if (event > 5) return M5PM1_ERR_INVALID_ARG;
+    // 不支持 ALL / NONE
+    // ALL / NONE not supported
+    if (event == M5PM1_IRQ_SYS_ALL || event == M5PM1_IRQ_SYS_NONE) {
+        M5PM1_LOG_E(TAG, "ALL/NONE not supported");
+        return M5PM1_ERR_NOT_SUPPORTED;
+    }
+    // 验证参数：event 必须是有效的单个系统事件位掩码 (bit[5:0])
+    // Validate parameter: event must be a valid single system event bitmask (bit[5:0])
+    if (event != M5PM1_IRQ_SYS_5VIN_INSERT && event != M5PM1_IRQ_SYS_5VIN_REMOVE &&
+        event != M5PM1_IRQ_SYS_5VINOUT_INSERT && event != M5PM1_IRQ_SYS_5VINOUT_REMOVE &&
+        event != M5PM1_IRQ_SYS_BAT_INSERT && event != M5PM1_IRQ_SYS_BAT_REMOVE) {
+        return M5PM1_ERR_INVALID_ARG;
+    }
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
@@ -3431,10 +3472,12 @@ m5pm1_err_t M5PM1::irqSetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t mask)
     uint8_t regVal;
     if (!_readReg(M5PM1_REG_IRQ_MASK2, &regVal)) return M5PM1_ERR_I2C_COMM;
 
+    // 直接使用位掩码操作
+    // Use bitmask operation directly
     if (mask == M5PM1_IRQ_MASK_ENABLE) {
-        regVal |= (1 << event);
+        regVal |= (uint8_t)event;
     } else {
-        regVal &= ~(1 << event);
+        regVal &= ~(uint8_t)event;
     }
 
     bool ok = _writeReg(M5PM1_REG_IRQ_MASK2, regVal);
@@ -3445,10 +3488,22 @@ m5pm1_err_t M5PM1::irqSetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t mask)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t* mask)
+m5pm1_err_t M5PM1::irqGetSysMask(m5pm1_irq_sys_t event, m5pm1_irq_mask_ctrl_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
-    if (event > 5) return M5PM1_ERR_INVALID_ARG;
+    // 不支持 ALL / NONE
+    // ALL / NONE not supported
+    if (event == M5PM1_IRQ_SYS_ALL || event == M5PM1_IRQ_SYS_NONE) {
+        M5PM1_LOG_E(TAG, "ALL/NONE not supported");
+        return M5PM1_ERR_NOT_SUPPORTED;
+    }
+    // 验证参数：event 必须是有效的单个系统事件位掩码 (bit[5:0])
+    // Validate parameter: event must be a valid single system event bitmask (bit[5:0])
+    if (event != M5PM1_IRQ_SYS_5VIN_INSERT && event != M5PM1_IRQ_SYS_5VIN_REMOVE &&
+        event != M5PM1_IRQ_SYS_5VINOUT_INSERT && event != M5PM1_IRQ_SYS_5VINOUT_REMOVE &&
+        event != M5PM1_IRQ_SYS_BAT_INSERT && event != M5PM1_IRQ_SYS_BAT_REMOVE) {
+        return M5PM1_ERR_INVALID_ARG;
+    }
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
@@ -3457,17 +3512,22 @@ m5pm1_err_t M5PM1::irqGetSysMask(uint8_t event, m5pm1_irq_mask_ctrl_t* mask)
     uint8_t regVal;
     if (!_readReg(M5PM1_REG_IRQ_MASK2, &regVal)) return M5PM1_ERR_I2C_COMM;
 
-    *mask = (m5pm1_irq_mask_ctrl_t)((regVal >> event) & 0x01);
+    // 直接使用位掩码检查
+    // Use bitmask check directly
+    *mask = (regVal & (uint8_t)event) ? M5PM1_IRQ_MASK_ENABLE : M5PM1_IRQ_MASK_DISABLE;
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqSetSysMaskAll(uint8_t mask)
+m5pm1_err_t M5PM1::irqSetSysMaskAll(m5pm1_irq_mask_ctrl_t mask)
 {
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
     }
-    bool ok = _writeReg(M5PM1_REG_IRQ_MASK2, mask & 0x3F);
+    // 系统中断屏蔽寄存器有效位为 bit[5:0]，共6个系统事件
+    // System interrupt mask register valid bits are bit[5:0], 6 system events total
+    uint8_t regVal = (mask == M5PM1_IRQ_MASK_ENABLE) ? 0x3F : 0x00;
+    bool ok        = _writeReg(M5PM1_REG_IRQ_MASK2, regVal);
     if (!ok) {
         return M5PM1_ERR_I2C_COMM;
     }
@@ -3475,7 +3535,7 @@ m5pm1_err_t M5PM1::irqSetSysMaskAll(uint8_t mask)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetSysMaskAll(uint8_t* mask)
+m5pm1_err_t M5PM1::irqGetSysMaskBits(uint8_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
     if (!_initialized) {
@@ -3488,8 +3548,14 @@ m5pm1_err_t M5PM1::irqGetSysMaskAll(uint8_t* mask)
 
 m5pm1_err_t M5PM1::irqSetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t mask)
 {
-    // 验证参数：type 必须是有效的位掩码
-    // Validate parameter: type must be a valid bitmask
+    // 不支持 ALL / NONE
+    // ALL / NONE not supported
+    if (type == M5PM1_BTN_IRQ_ALL || type == M5PM1_BTN_IRQ_NONE) {
+        M5PM1_LOG_E(TAG, "ALL/NONE not supported");
+        return M5PM1_ERR_NOT_SUPPORTED;
+    }
+    // 验证参数：type 必须是有效的单个按钮事件位掩码 (bit[2:0])
+    // Validate parameter: type must be a valid single button event bitmask (bit[2:0])
     if (type != M5PM1_BTN_IRQ_CLICK && type != M5PM1_BTN_IRQ_WAKEUP && type != M5PM1_BTN_IRQ_DOUBLE) {
         return M5PM1_ERR_INVALID_ARG;
     }
@@ -3520,8 +3586,14 @@ m5pm1_err_t M5PM1::irqSetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t mas
 m5pm1_err_t M5PM1::irqGetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
-    // 验证参数：type 必须是有效的位掩码
-    // Validate parameter: type must be a valid bitmask
+    // 不支持 ALL / NONE
+    // ALL / NONE not supported
+    if (type == M5PM1_BTN_IRQ_ALL || type == M5PM1_BTN_IRQ_NONE) {
+        M5PM1_LOG_E(TAG, "ALL/NONE not supported");
+        return M5PM1_ERR_NOT_SUPPORTED;
+    }
+    // 验证参数：type 必须是有效的单个按钮事件位掩码 (bit[2:0])
+    // Validate parameter: type must be a valid single button event bitmask (bit[2:0])
     if (type != M5PM1_BTN_IRQ_CLICK && type != M5PM1_BTN_IRQ_WAKEUP && type != M5PM1_BTN_IRQ_DOUBLE) {
         return M5PM1_ERR_INVALID_ARG;
     }
@@ -3539,13 +3611,16 @@ m5pm1_err_t M5PM1::irqGetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t* ma
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqSetBtnMaskAll(uint8_t mask)
+m5pm1_err_t M5PM1::irqSetBtnMaskAll(m5pm1_irq_mask_ctrl_t mask)
 {
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
         return M5PM1_ERR_NOT_INIT;
     }
-    bool ok = _writeReg(M5PM1_REG_IRQ_MASK3, mask & 0x07);
+    // 按钮中断屏蔽寄存器有效位为 bit[2:0]，共3个按钮事件
+    // Button interrupt mask register valid bits are bit[2:0], 3 button events total
+    uint8_t regVal = (mask == M5PM1_IRQ_MASK_ENABLE) ? 0x07 : 0x00;
+    bool ok        = _writeReg(M5PM1_REG_IRQ_MASK3, regVal);
     if (!ok) {
         return M5PM1_ERR_I2C_COMM;
     }
@@ -3553,7 +3628,7 @@ m5pm1_err_t M5PM1::irqSetBtnMaskAll(uint8_t mask)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetBtnMaskAll(uint8_t* mask)
+m5pm1_err_t M5PM1::irqGetBtnMaskBits(uint8_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
     if (!_initialized) {

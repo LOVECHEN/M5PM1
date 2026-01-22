@@ -98,9 +98,10 @@
 - **枚举式读取**
   - `irqGetGpioStatusEnum`/`irqGetSysStatusEnum`/`irqGetBtnStatusEnum`
 - **中断屏蔽**
-  - `irqSetGpioMask`/`irqGetGpioMask`/`irqSetGpioMaskAll`/`irqGetGpioMaskAll`
-  - `irqSetSysMask`/`irqGetSysMask`/`irqSetSysMaskAll`/`irqGetSysMaskAll`
-  - `irqSetBtnMask`/`irqGetBtnMask`/`irqSetBtnMaskAll`/`irqGetBtnMaskAll`
+  - GPIO: `irqSetGpioMask(m5pm1_irq_gpio_t, m5pm1_irq_mask_ctrl_t)`/`irqGetGpioMask`/`irqSetGpioMaskAll(m5pm1_irq_mask_ctrl_t)`/`irqGetGpioMaskBits`
+  - 系统: `irqSetSysMask(m5pm1_irq_sys_t, m5pm1_irq_mask_ctrl_t)`/`irqGetSysMask`/`irqSetSysMaskAll(m5pm1_irq_mask_ctrl_t)`/`irqGetSysMaskBits`
+  - 按钮: `irqSetBtnMask(m5pm1_btn_irq_t, m5pm1_irq_mask_ctrl_t)`/`irqGetBtnMask`/`irqSetBtnMaskAll(m5pm1_irq_mask_ctrl_t)`/`irqGetBtnMaskBits`
+  - 注意: 单个设置接口不支持 `ALL`/`NONE` 枚举值，批量操作请使用 `xxxMaskAll()` 函数
 
 ### 12) 系统命令
 

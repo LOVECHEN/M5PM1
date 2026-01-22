@@ -26,9 +26,9 @@
 
 M5PM1 pm1;
 
-#define LOGI(fmt, ...) Serial.printf("[PM1][I] " fmt "\r\n", ##__VA_ARGS__)
-#define LOGW(fmt, ...) Serial.printf("[PM1][W] " fmt "\r\n", ##__VA_ARGS__)
-#define LOGE(fmt, ...) Serial.printf("[PM1][E] " fmt "\r\n", ##__VA_ARGS__)
+#define LOGI(fmt, ...) Serial1.printf("[PM1][I] " fmt "\r\n", ##__VA_ARGS__)
+#define LOGW(fmt, ...) Serial1.printf("[PM1][W] " fmt "\r\n", ##__VA_ARGS__)
+#define LOGE(fmt, ...) Serial1.printf("[PM1][E] " fmt "\r\n", ##__VA_ARGS__)
 
 #ifndef PM1_I2C_SDA
 #define PM1_I2C_SDA 47
@@ -41,6 +41,9 @@ M5PM1 pm1;
 #endif
 #ifndef PM1_ESP_IRQ_GPIO
 #define PM1_ESP_IRQ_GPIO 13
+#endif
+#ifndef PM1_GPIO_IRQ_PIN
+#define PM1_GPIO_IRQ_PIN M5PM1_GPIO_NUM_1
 #endif
 
 volatile bool irqFlag = false;
@@ -95,9 +98,14 @@ static void enterSleep()
 void setup()
 {
     Serial.begin(115200);
+    Serial1.begin(115200, SERIAL_8N1, 9, 10);
     delay(200);
     printDivider();
     LOGI("USB Interrupt + Sleep demo start");
+
+    // 请使用 Serial1 接收 USB 事件日志
+    // Please use Serial1 to receive USB event logs
+    LOGI("Please use Serial1 to receive USB event logs");
 
     m5pm1_err_t err = pm1.begin(&Wire, M5PM1_DEFAULT_ADDR, PM1_I2C_SDA, PM1_I2C_SCL, PM1_I2C_FREQ);
     if (err != M5PM1_OK) {
@@ -118,27 +126,30 @@ void setup()
     // Clear timer settings to avoid mis-trigger.
     pm1.timerClear();
 
-    // 设置ESP32的中断引脚，用于接收PM1的IRQ信号。
-    // Setup ESP32 interrupt pin to receive IRQ signal from PM1.
-    pinMode(PM1_ESP_IRQ_GPIO, INPUT_PULLUP);
-    attachInterrupt(PM1_ESP_IRQ_GPIO, pm1_irq_handler, FALLING);
-
     // 屏蔽所有GPIO和按钮中断
     // Mask all GPIO and Button IRQs (disable them)
     pm1.irqSetGpioMaskAll(M5PM1_IRQ_MASK_ENABLE);
     pm1.irqSetBtnMaskAll(M5PM1_IRQ_MASK_ENABLE);
 
-    // 配置系统中断：只启用 VIN 移除中断（也可以全部开启）
-    // Configure System IRQs: Enable VIN remove interrupt
+    // 配置系统中断：启用 VIN 插拔中断
+    // Configure System IRQs: Enable VIN plug/unplug IRQs
     pm1.irqSetSysMaskAll(M5PM1_IRQ_MASK_ENABLE);                           // 先全部屏蔽
     pm1.irqSetSysMask(M5PM1_IRQ_SYS_5VIN_REMOVE, M5PM1_IRQ_MASK_DISABLE);  // 开启5VIN移除
-    // pm1.irqSetSysMask(M5PM1_IRQ_SYS_5VIN_INSERT, M5PM1_IRQ_MASK_DISABLE); // 可选开启插入
+    pm1.irqSetSysMask(M5PM1_IRQ_SYS_5VIN_INSERT, M5PM1_IRQ_MASK_DISABLE);  // 开启5VIN插入
 
-    // 注意：有些板子 TypeC 可能连接到 5VINOUT
-    pm1.irqSetSysMask(M5PM1_IRQ_SYS_5VINOUT_REMOVE, M5PM1_IRQ_MASK_DISABLE);
+    // 启用 PM1 GPIO1 的中断输出（这里的Mask Disable代表允许产生中断）。
+    // Enable PM1 GPIO1 IRQ output (Mask Disable means interrupt enabled).
+    pm1.gpioSetFunc(PM1_GPIO_IRQ_PIN, M5PM1_GPIO_FUNC_IRQ);
+    pm1.gpioSetMode(PM1_GPIO_IRQ_PIN, M5PM1_GPIO_MODE_INPUT);
+    pm1.gpioSetPull(PM1_GPIO_IRQ_PIN, M5PM1_GPIO_PULL_UP);
+
+    // 设置ESP32的中断引脚，用于接收PM1的IRQ信号。
+    // Setup ESP32 interrupt pin to receive IRQ signal from PM1.
+    pinMode(PM1_ESP_IRQ_GPIO, INPUT_PULLUP);
+    attachInterrupt(PM1_ESP_IRQ_GPIO, pm1_irq_handler, FALLING);
 
     printDivider();
-    LOGI("Waiting for USB unplug event...");
+    LOGI("Waiting for USB (5VIN) events...");
 }
 
 void loop()
@@ -152,24 +163,22 @@ void loop()
                 LOGI("System IRQ status: 0x%02X", sysIrq);
 
                 // 检测 5VIN 移除
+                // Detect 5VIN Remove
                 if (sysIrq & M5PM1_IRQ_SYS_5VIN_REMOVE) {
                     LOGI("Event: 5VIN Removed");
                     enterSleep();
                 }
 
-                // 检测 5VINOUT 移除 (以防万一)
-                if (sysIrq & M5PM1_IRQ_SYS_5VINOUT_REMOVE) {
-                    LOGI("Event: 5VINOUT Removed");
-                    enterSleep();
-                }
-
+                // 检测 5VIN 插入
+                // Detect 5VIN Insert
                 if (sysIrq & M5PM1_IRQ_SYS_5VIN_INSERT) {
                     LOGI("Event: 5VIN Inserted");
                 }
             }
         }
 
-        // 同时也清除任何可能的误触发（虽然我们mask了btn和gpio）
+        // 同时也清除任何可能的误触发
+        // Also clear any possible spurious triggers
         uint8_t dummy;
         pm1.irqGetGpioStatus(&dummy, M5PM1_CLEAN_ALL);
         pm1.irqGetBtnStatus(&dummy, M5PM1_CLEAN_ALL);
@@ -183,5 +192,11 @@ void loop()
         pm1.irqGetSysStatus(&dummy, M5PM1_CLEAN_ALL);
     }
 
-    delay(10);
+    delay(500);
+
+    // 打印PM1 5VIN电压
+    static uint16_t vin_mv = 0;
+    if (pm1.readVin(&vin_mv) == M5PM1_OK) {
+        LOGI("5VIN Voltage: %d mV (%.2f V)", vin_mv, vin_mv / 1000.0f);
+    }
 }
