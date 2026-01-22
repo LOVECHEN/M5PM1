@@ -52,7 +52,7 @@ Feature overview of the PM1 power management driver library for Arduino/ESP-IDF.
 
 - `gpioSetPowerHold`/`gpioGetPowerHold`
 - `ldoSetPowerHold`/`ldoGetPowerHold`
-- `dcdcSetPowerHold`/`dcdcGetPowerHold`
+- `boostSetPowerHold`/`boostGetPowerHold`
 
 ### 5) ADC and Temperature
 

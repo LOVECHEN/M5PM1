@@ -143,13 +143,13 @@ typedef enum {
 #define M5PM1_REG_HOLD_CFG \
     0x07  // R/W   电源保持配置 / Power hold configuration
           //       [7] Reserved 保留
-          //       [6] DCDC(5V) - DCDC电源保持
-          //       [5] LDO(3.3V) - LDO电源保持
-          //       [4] GPIO4 - GPIO4输出状态保持
-          //       [3] GPIO3 - GPIO3输出状态保持
-          //       [2] GPIO2 - GPIO2输出状态保持
-          //       [1] GPIO1 - GPIO1输出状态保持
-          //       [0] GPIO0 - GPIO0输出状态保持
+          //       [6] BOOST/GROVE(5VINOUT)电源保持(视实际硬件而定)
+          //       [5] LDO(3.3V)电源保持
+          //       [4] GPIO4输出状态保持
+          //       [3] GPIO3输出状态保持
+          //       [2] GPIO2输出状态保持
+          //       [1] GPIO1输出状态保持
+          //       [0] GPIO0输出状态保持
           //       注意：复位/下载模式/关机时自动清零为0x00
           //       Note: Auto-clears to 0x00 on reset/download/shutdown
 
@@ -1444,7 +1444,7 @@ public:
      * @note 启用后，即使按下关机按钮，DCDC 5V 也会保持输出
      *       When enabled, DCDC 5V will remain powered even if power-off button is pressed
      */
-    m5pm1_err_t dcdcSetPowerHold(bool enable);
+    m5pm1_err_t boostSetPowerHold(bool enable);
 
     /**
      * @brief 获取 DCDC 5V 电源保持功能状态
@@ -1454,7 +1454,7 @@ public:
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t dcdcGetPowerHold(bool* enable);
+    m5pm1_err_t boostGetPowerHold(bool* enable);
 
     // ========================
     // ADC 功能
@@ -2015,6 +2015,30 @@ public:
     m5pm1_err_t irqGetGpioStatus(uint8_t* status, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
+     * @brief 读取 GPIO 中断状态（返回枚举值，用户友好）
+     *        Read GPIO interrupt status (returns enum, user-friendly)
+     * @param gpio_num 输出：触发中断的 GPIO 枚举
+     *                 Output: triggered GPIO enum
+     * @param cleanType 清除类型
+     *                  Clean type
+     *                  - M5PM1_CLEAN_NONE: 不清除
+     *                  - M5PM1_CLEAN_NONE: No clean
+     *                  - M5PM1_CLEAN_ONCE: 清除当前返回的 GPIO 中断（从低位往高位逐个）
+     *                  - M5PM1_CLEAN_ONCE: Clean current GPIO (low to high, one at a time)
+     *                  - M5PM1_CLEAN_ALL: 清除所有 GPIO 中断
+     *                  - M5PM1_CLEAN_ALL: Clean all GPIO interrupts
+     * @return M5PM1_OK 成功，M5PM1_ERR_xxx 失败
+     *         M5PM1_OK on success, error code otherwise
+     * @note 如果有多个 GPIO 同时触发，每次调用返回一个（从低位到高位）
+     *       If multiple GPIOs triggered, returns one per call (low to high)
+     * @note 使用 M5PM1_CLEAN_ONCE 可以逐个处理多个中断
+     *       Use M5PM1_CLEAN_ONCE to handle multiple interrupts one by one
+     * @note 如果没有中断，返回 M5PM1_IRQ_GPIO_NONE
+     *       Returns M5PM1_IRQ_GPIO_NONE if no interrupt
+     */
+    m5pm1_err_t irqGetGpioStatusEnum(m5pm1_irq_gpio_t* gpio_num, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+
+    /**
      * @brief 清除所有 GPIO 中断状态
      *        Clear all GPIO interrupt status
      * @return 成功返回 M5PM1_OK，否则返回错误码
@@ -2039,6 +2063,30 @@ public:
      *         Return M5PM1_OK on success, error code otherwise
      */
     m5pm1_err_t irqGetSysStatus(uint8_t* status, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+
+    /**
+     * @brief 读取系统中断状态（返回枚举值，用户友好）
+     *        Read system interrupt status (returns enum, user-friendly)
+     * @param sys_irq 输出：触发中断的系统事件枚举
+     *                Output: triggered system event enum
+     * @param cleanType 清除类型
+     *                  Clean type
+     *                  - M5PM1_CLEAN_NONE: 不清除
+     *                  - M5PM1_CLEAN_NONE: No clean
+     *                  - M5PM1_CLEAN_ONCE: 清除当前返回的系统中断（从低位往高位逐个）
+     *                  - M5PM1_CLEAN_ONCE: Clean current event (low to high, one at a time)
+     *                  - M5PM1_CLEAN_ALL: 清除所有系统中断
+     *                  - M5PM1_CLEAN_ALL: Clean all system interrupts
+     * @return M5PM1_OK 成功，M5PM1_ERR_xxx 失败
+     *         M5PM1_OK on success, error code otherwise
+     * @note 如果有多个事件同时触发，每次调用返回一个（从低位到高位）
+     *       If multiple events triggered, returns one per call (low to high)
+     * @note 使用 M5PM1_CLEAN_ONCE 可以逐个处理多个中断
+     *       Use M5PM1_CLEAN_ONCE to handle multiple interrupts one by one
+     * @note 如果没有中断，返回 M5PM1_IRQ_SYS_NONE
+     *       Returns M5PM1_IRQ_SYS_NONE if no interrupt
+     */
+    m5pm1_err_t irqGetSysStatusEnum(m5pm1_irq_sys_t* sys_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
      * @brief 清除所有系统中断状态
@@ -2067,66 +2115,6 @@ public:
     m5pm1_err_t irqGetBtnStatus(uint8_t* status, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
-     * @brief 清除所有按钮中断状态
-     *        Clear all button interrupt status
-     * @return 成功返回 M5PM1_OK，否则返回错误码
-     *         Return M5PM1_OK on success, error code otherwise
-     */
-    m5pm1_err_t irqClearBtnAll();
-
-    // ========================
-    // 中断状态读取（枚举返回，用户友好）
-    // IRQ Status Read (Enum Return, User-Friendly)
-    // ========================
-    /**
-     * @brief 读取 GPIO 中断状态（返回枚举值，用户友好）
-     *        Read GPIO interrupt status (returns enum, user-friendly)
-     * @param gpio_num 输出：触发中断的 GPIO 枚举
-     *                 Output: triggered GPIO enum
-     * @param cleanType 清除类型
-     *                  Clean type
-     *                  - M5PM1_CLEAN_NONE: 不清除
-     *                  - M5PM1_CLEAN_NONE: No clean
-     *                  - M5PM1_CLEAN_ONCE: 清除当前返回的 GPIO 中断（从低位往高位逐个）
-     *                  - M5PM1_CLEAN_ONCE: Clean current GPIO (low to high, one at a time)
-     *                  - M5PM1_CLEAN_ALL: 清除所有 GPIO 中断
-     *                  - M5PM1_CLEAN_ALL: Clean all GPIO interrupts
-     * @return M5PM1_OK 成功，M5PM1_ERR_xxx 失败
-     *         M5PM1_OK on success, error code otherwise
-     * @note 如果有多个 GPIO 同时触发，每次调用返回一个（从低位到高位）
-     *       If multiple GPIOs triggered, returns one per call (low to high)
-     * @note 使用 M5PM1_CLEAN_ONCE 可以逐个处理多个中断
-     *       Use M5PM1_CLEAN_ONCE to handle multiple interrupts one by one
-     * @note 如果没有中断，返回 M5PM1_IRQ_GPIO_NONE
-     *       Returns M5PM1_IRQ_GPIO_NONE if no interrupt
-     */
-    m5pm1_err_t irqGetGpioStatusEnum(m5pm1_irq_gpio_t* gpio_num, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
-
-    /**
-     * @brief 读取系统中断状态（返回枚举值，用户友好）
-     *        Read system interrupt status (returns enum, user-friendly)
-     * @param sys_irq 输出：触发中断的系统事件枚举
-     *                Output: triggered system event enum
-     * @param cleanType 清除类型
-     *                  Clean type
-     *                  - M5PM1_CLEAN_NONE: 不清除
-     *                  - M5PM1_CLEAN_NONE: No clean
-     *                  - M5PM1_CLEAN_ONCE: 清除当前返回的系统中断（从低位往高位逐个）
-     *                  - M5PM1_CLEAN_ONCE: Clean current event (low to high, one at a time)
-     *                  - M5PM1_CLEAN_ALL: 清除所有系统中断
-     *                  - M5PM1_CLEAN_ALL: Clean all system interrupts
-     * @return M5PM1_OK 成功，M5PM1_ERR_xxx 失败
-     *         M5PM1_OK on success, error code otherwise
-     * @note 如果有多个事件同时触发，每次调用返回一个（从低位到高位）
-     *       If multiple events triggered, returns one per call (low to high)
-     * @note 使用 M5PM1_CLEAN_ONCE 可以逐个处理多个中断
-     *       Use M5PM1_CLEAN_ONCE to handle multiple interrupts one by one
-     * @note 如果没有中断，返回 M5PM1_IRQ_SYS_NONE
-     *       Returns M5PM1_IRQ_SYS_NONE if no interrupt
-     */
-    m5pm1_err_t irqGetSysStatusEnum(m5pm1_irq_sys_t* sys_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
-
-    /**
      * @brief 读取按钮中断状态（返回枚举值，用户友好）
      *        Read button interrupt status (returns enum, user-friendly)
      * @param btn_irq 输出：触发中断的按钮事件枚举
@@ -2149,6 +2137,14 @@ public:
      *       Returns M5PM1_BTN_IRQ_NONE if no interrupt
      */
     m5pm1_err_t irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+
+    /**
+     * @brief 清除所有按钮中断状态
+     *        Clear all button interrupt status
+     * @return 成功返回 M5PM1_OK，否则返回错误码
+     *         Return M5PM1_OK on success, error code otherwise
+     */
+    m5pm1_err_t irqClearBtnAll();
 
     /**
      * @brief Set single GPIO pin interrupt mask

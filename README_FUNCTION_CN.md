@@ -52,7 +52,7 @@
 
 - `gpioSetPowerHold`/`gpioGetPowerHold`
 - `ldoSetPowerHold`/`ldoGetPowerHold`
-- `dcdcSetPowerHold`/`dcdcGetPowerHold`
+- `boostSetPowerHold`/`boostGetPowerHold`
 
 ### 5) ADC 与温度
 

@@ -1622,6 +1622,35 @@ int M5PM1::digitalRead(uint8_t pin)
 // Advanced GPIO Functions
 // ============================
 
+m5pm1_err_t M5PM1::gpioSet(m5pm1_gpio_num_t pin, m5pm1_gpio_mode_t mode, uint8_t value, m5pm1_gpio_pull_t pull,
+                           m5pm1_gpio_drive_t drive)
+{
+    if (!_isValidPin(pin)) return M5PM1_ERR_INVALID_ARG;
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+
+    m5pm1_err_t err = gpioSetFunc(pin, M5PM1_GPIO_FUNC_GPIO);
+    if (err != M5PM1_OK) return err;
+
+    err = gpioSetMode(pin, mode);
+    if (err != M5PM1_OK) return err;
+
+    if (mode == M5PM1_GPIO_MODE_OUTPUT) {
+        err = gpioSetOutput(pin, value);
+        if (err != M5PM1_OK) return err;
+    }
+
+    err = gpioSetPull(pin, pull);
+    if (err != M5PM1_OK) return err;
+
+    err = gpioSetDrive(pin, drive);
+    if (err != M5PM1_OK) return err;
+
+    return M5PM1_OK;
+}
+
 m5pm1_err_t M5PM1::gpioSetFunc(m5pm1_gpio_num_t pin, m5pm1_gpio_func_t func)
 {
     if (!_isValidPin(pin)) return M5PM1_ERR_INVALID_ARG;
@@ -1827,35 +1856,6 @@ m5pm1_err_t M5PM1::gpioSetWakeEdge(m5pm1_gpio_num_t pin, m5pm1_gpio_wake_edge_t 
 
     if (!_writeReg(M5PM1_REG_GPIO_WAKE_CFG, regVal)) return M5PM1_ERR_I2C_COMM;
     _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_GPIO);
-    return M5PM1_OK;
-}
-
-m5pm1_err_t M5PM1::gpioSet(m5pm1_gpio_num_t pin, m5pm1_gpio_mode_t mode, uint8_t value, m5pm1_gpio_pull_t pull,
-                           m5pm1_gpio_drive_t drive)
-{
-    if (!_isValidPin(pin)) return M5PM1_ERR_INVALID_ARG;
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-
-    m5pm1_err_t err = gpioSetFunc(pin, M5PM1_GPIO_FUNC_GPIO);
-    if (err != M5PM1_OK) return err;
-
-    err = gpioSetMode(pin, mode);
-    if (err != M5PM1_OK) return err;
-
-    if (mode == M5PM1_GPIO_MODE_OUTPUT) {
-        err = gpioSetOutput(pin, value);
-        if (err != M5PM1_OK) return err;
-    }
-
-    err = gpioSetPull(pin, pull);
-    if (err != M5PM1_OK) return err;
-
-    err = gpioSetDrive(pin, drive);
-    if (err != M5PM1_OK) return err;
-
     return M5PM1_OK;
 }
 
@@ -2152,7 +2152,7 @@ m5pm1_err_t M5PM1::ldoGetPowerHold(bool* enable)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::dcdcSetPowerHold(bool enable)
+m5pm1_err_t M5PM1::boostSetPowerHold(bool enable)
 {
     if (!_initialized) {
         M5PM1_LOG_E(TAG, "Not initialized");
@@ -2172,7 +2172,7 @@ m5pm1_err_t M5PM1::dcdcSetPowerHold(bool enable)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::dcdcGetPowerHold(bool* enable)
+m5pm1_err_t M5PM1::boostGetPowerHold(bool* enable)
 {
     if (enable == nullptr) return M5PM1_ERR_INVALID_ARG;
     if (!_initialized) {
@@ -2478,6 +2478,35 @@ m5pm1_err_t M5PM1::setPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t duty12,
     return M5PM1_OK;
 }
 
+m5pm1_err_t M5PM1::getPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t* duty12, bool* polarity, bool* enable)
+{
+    if (channel > M5PM1_PWM_CH_1 || duty12 == nullptr || polarity == nullptr || enable == nullptr) {
+        return M5PM1_ERR_INVALID_ARG;
+    }
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+
+    uint8_t regL  = (channel == M5PM1_PWM_CH_0) ? M5PM1_REG_PWM0_L : M5PM1_REG_PWM1_L;
+    uint16_t data = 0;
+    if (!_readReg16(regL, &data)) {
+        M5PM1_LOG_E(TAG, "Failed to read PWM channel %d duty register", channel);
+        return M5PM1_ERR_I2C_COMM;
+    }
+
+    *duty12   = data & 0x0FFF;
+    *polarity = (data & ((uint16_t)0x20 << 8)) != 0;
+    *enable   = (data & ((uint16_t)0x10 << 8)) != 0;
+
+    _pwmStates[channel].duty12   = *duty12;
+    _pwmStates[channel].polarity = *polarity;
+    _pwmStates[channel].enabled  = *enable;
+    _pwmStatesValid              = true;
+
+    return M5PM1_OK;
+}
+
 m5pm1_err_t M5PM1::setPwmConfig(m5pm1_pwm_channel_t channel, bool enable, bool polarity, uint16_t frequency,
                                 uint16_t duty12)
 {
@@ -2511,35 +2540,6 @@ m5pm1_err_t M5PM1::setPwmConfig(m5pm1_pwm_channel_t channel, bool enable, bool p
     m5pm1_err_t err = setPwmDuty12bit(channel, duty12, polarity, enable);
     if (err != M5PM1_OK) return err;
     return setPwmFrequency(frequency);
-}
-
-m5pm1_err_t M5PM1::getPwmDuty12bit(m5pm1_pwm_channel_t channel, uint16_t* duty12, bool* polarity, bool* enable)
-{
-    if (channel > M5PM1_PWM_CH_1 || duty12 == nullptr || polarity == nullptr || enable == nullptr) {
-        return M5PM1_ERR_INVALID_ARG;
-    }
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-
-    uint8_t regL  = (channel == M5PM1_PWM_CH_0) ? M5PM1_REG_PWM0_L : M5PM1_REG_PWM1_L;
-    uint16_t data = 0;
-    if (!_readReg16(regL, &data)) {
-        M5PM1_LOG_E(TAG, "Failed to read PWM channel %d duty register", channel);
-        return M5PM1_ERR_I2C_COMM;
-    }
-
-    *duty12   = data & 0x0FFF;
-    *polarity = (data & ((uint16_t)0x20 << 8)) != 0;
-    *enable   = (data & ((uint16_t)0x10 << 8)) != 0;
-
-    _pwmStates[channel].duty12   = *duty12;
-    _pwmStates[channel].polarity = *polarity;
-    _pwmStates[channel].enabled  = *enable;
-    _pwmStatesValid              = true;
-
-    return M5PM1_OK;
 }
 
 m5pm1_err_t M5PM1::analogWrite(m5pm1_pwm_channel_t channel, uint8_t value)
@@ -3076,116 +3076,6 @@ m5pm1_err_t M5PM1::irqGetGpioStatus(uint8_t* status, m5pm1_clean_type_t cleanTyp
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqClearGpioAll()
-{
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-
-    // PM1芯片采用"写0清除"机制：写入0x00清除所有位
-    // PM1 chip uses "write-0-to-clear" mechanism: write 0x00 to clear all bits
-    if (!_writeReg(M5PM1_REG_IRQ_STATUS1, 0x00)) {
-        return M5PM1_ERR_I2C_COMM;
-    }
-
-    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
-    return M5PM1_OK;
-}
-
-m5pm1_err_t M5PM1::irqGetSysStatus(uint8_t* status, m5pm1_clean_type_t cleanType)
-{
-    if (status == nullptr) {
-        M5PM1_LOG_E(TAG, "irqGetSysStatus status is null");
-        return M5PM1_ERR_INVALID_ARG;
-    }
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-    if (!_readReg(M5PM1_REG_IRQ_STATUS2, status)) return M5PM1_ERR_I2C_COMM;
-
-    if (cleanType == M5PM1_CLEAN_ONCE && *status != 0) {
-        // 清除已触发的位（采用"写0清除"机制）
-        // Clear triggered bits (using "write-0-to-clear" mechanism)
-        // 反转位：触发位变为0，未触发位变为1
-        // Bit invert: triggered bits become 0, untriggered bits become 1
-        uint8_t new_val = ~(*status);
-        if (!_writeReg(M5PM1_REG_IRQ_STATUS2, new_val)) return M5PM1_ERR_I2C_COMM;
-    } else if (cleanType == M5PM1_CLEAN_ALL) {
-        // 清除所有位（采用"写0清除"机制：写入0x00）
-        // Clear all bits (using "write-0-to-clear" mechanism: write 0x00)
-        if (!_writeReg(M5PM1_REG_IRQ_STATUS2, 0x00)) return M5PM1_ERR_I2C_COMM;
-    }
-    return M5PM1_OK;
-}
-
-m5pm1_err_t M5PM1::irqClearSysAll()
-{
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-
-    // PM1芯片采用"写0清除"机制：写入0x00清除所有位
-    // PM1 chip uses "write-0-to-clear" mechanism: write 0x00 to clear all bits
-    if (!_writeReg(M5PM1_REG_IRQ_STATUS2, 0x00)) {
-        return M5PM1_ERR_I2C_COMM;
-    }
-
-    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
-    return M5PM1_OK;
-}
-
-m5pm1_err_t M5PM1::irqGetBtnStatus(uint8_t* status, m5pm1_clean_type_t cleanType)
-{
-    if (status == nullptr) {
-        M5PM1_LOG_E(TAG, "irqGetBtnStatus status is null");
-        return M5PM1_ERR_INVALID_ARG;
-    }
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-    if (!_readReg(M5PM1_REG_IRQ_STATUS3, status)) return M5PM1_ERR_I2C_COMM;
-
-    if (cleanType == M5PM1_CLEAN_ONCE && *status != 0) {
-        // 清除已触发的位（采用"写0清除"机制）
-        // Clear triggered bits (using "write-0-to-clear" mechanism)
-        // 反转位：触发位变为0，未触发位变为1
-        // Bit invert: triggered bits become 0, untriggered bits become 1
-        uint8_t new_val = ~(*status);
-        if (!_writeReg(M5PM1_REG_IRQ_STATUS3, new_val)) return M5PM1_ERR_I2C_COMM;
-    } else if (cleanType == M5PM1_CLEAN_ALL) {
-        // 清除所有位（采用"写0清除"机制：写入0x00）
-        // Clear all bits (using "write-0-to-clear" mechanism: write 0x00)
-        if (!_writeReg(M5PM1_REG_IRQ_STATUS3, 0x00)) return M5PM1_ERR_I2C_COMM;
-    }
-    return M5PM1_OK;
-}
-
-m5pm1_err_t M5PM1::irqClearBtnAll()
-{
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-
-    // PM1芯片采用"写0清除"机制：写入0x00清除所有位
-    // PM1 chip uses "write-0-to-clear" mechanism: write 0x00 to clear all bits
-    if (!_writeReg(M5PM1_REG_IRQ_STATUS3, 0x00)) {
-        return M5PM1_ERR_I2C_COMM;
-    }
-
-    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
-    return M5PM1_OK;
-}
-
-// ============================
-// 中断状态读取（枚举返回，用户友好）
-// IRQ Status Read (Enum Return, User-Friendly)
-// ============================
-
 m5pm1_err_t M5PM1::irqGetGpioStatusEnum(m5pm1_irq_gpio_t* gpio_num, m5pm1_clean_type_t cleanType)
 {
     // 参数验证
@@ -3234,6 +3124,50 @@ m5pm1_err_t M5PM1::irqGetGpioStatusEnum(m5pm1_irq_gpio_t* gpio_num, m5pm1_clean_
     }
 
     _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
+    return M5PM1_OK;
+}
+
+m5pm1_err_t M5PM1::irqClearGpioAll()
+{
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+
+    // PM1芯片采用"写0清除"机制：写入0x00清除所有位
+    // PM1 chip uses "write-0-to-clear" mechanism: write 0x00 to clear all bits
+    if (!_writeReg(M5PM1_REG_IRQ_STATUS1, 0x00)) {
+        return M5PM1_ERR_I2C_COMM;
+    }
+
+    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
+    return M5PM1_OK;
+}
+
+m5pm1_err_t M5PM1::irqGetSysStatus(uint8_t* status, m5pm1_clean_type_t cleanType)
+{
+    if (status == nullptr) {
+        M5PM1_LOG_E(TAG, "irqGetSysStatus status is null");
+        return M5PM1_ERR_INVALID_ARG;
+    }
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+    if (!_readReg(M5PM1_REG_IRQ_STATUS2, status)) return M5PM1_ERR_I2C_COMM;
+
+    if (cleanType == M5PM1_CLEAN_ONCE && *status != 0) {
+        // 清除已触发的位（采用"写0清除"机制）
+        // Clear triggered bits (using "write-0-to-clear" mechanism)
+        // 反转位：触发位变为0，未触发位变为1
+        // Bit invert: triggered bits become 0, untriggered bits become 1
+        uint8_t new_val = ~(*status);
+        if (!_writeReg(M5PM1_REG_IRQ_STATUS2, new_val)) return M5PM1_ERR_I2C_COMM;
+    } else if (cleanType == M5PM1_CLEAN_ALL) {
+        // 清除所有位（采用"写0清除"机制：写入0x00）
+        // Clear all bits (using "write-0-to-clear" mechanism: write 0x00)
+        if (!_writeReg(M5PM1_REG_IRQ_STATUS2, 0x00)) return M5PM1_ERR_I2C_COMM;
+    }
     return M5PM1_OK;
 }
 
@@ -3288,6 +3222,50 @@ m5pm1_err_t M5PM1::irqGetSysStatusEnum(m5pm1_irq_sys_t* sys_irq, m5pm1_clean_typ
     return M5PM1_OK;
 }
 
+m5pm1_err_t M5PM1::irqClearSysAll()
+{
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+
+    // PM1芯片采用"写0清除"机制：写入0x00清除所有位
+    // PM1 chip uses "write-0-to-clear" mechanism: write 0x00 to clear all bits
+    if (!_writeReg(M5PM1_REG_IRQ_STATUS2, 0x00)) {
+        return M5PM1_ERR_I2C_COMM;
+    }
+
+    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
+    return M5PM1_OK;
+}
+
+m5pm1_err_t M5PM1::irqGetBtnStatus(uint8_t* status, m5pm1_clean_type_t cleanType)
+{
+    if (status == nullptr) {
+        M5PM1_LOG_E(TAG, "irqGetBtnStatus status is null");
+        return M5PM1_ERR_INVALID_ARG;
+    }
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+    if (!_readReg(M5PM1_REG_IRQ_STATUS3, status)) return M5PM1_ERR_I2C_COMM;
+
+    if (cleanType == M5PM1_CLEAN_ONCE && *status != 0) {
+        // 清除已触发的位（采用"写0清除"机制）
+        // Clear triggered bits (using "write-0-to-clear" mechanism)
+        // 反转位：触发位变为0，未触发位变为1
+        // Bit invert: triggered bits become 0, untriggered bits become 1
+        uint8_t new_val = ~(*status);
+        if (!_writeReg(M5PM1_REG_IRQ_STATUS3, new_val)) return M5PM1_ERR_I2C_COMM;
+    } else if (cleanType == M5PM1_CLEAN_ALL) {
+        // 清除所有位（采用"写0清除"机制：写入0x00）
+        // Clear all bits (using "write-0-to-clear" mechanism: write 0x00)
+        if (!_writeReg(M5PM1_REG_IRQ_STATUS3, 0x00)) return M5PM1_ERR_I2C_COMM;
+    }
+    return M5PM1_OK;
+}
+
 m5pm1_err_t M5PM1::irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_type_t cleanType)
 {
     // 参数验证
@@ -3333,6 +3311,23 @@ m5pm1_err_t M5PM1::irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_typ
         if (!_writeReg(M5PM1_REG_IRQ_STATUS3, 0x00)) {
             return M5PM1_ERR_I2C_COMM;
         }
+    }
+
+    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
+    return M5PM1_OK;
+}
+
+m5pm1_err_t M5PM1::irqClearBtnAll()
+{
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+
+    // PM1芯片采用"写0清除"机制：写入0x00清除所有位
+    // PM1 chip uses "write-0-to-clear" mechanism: write 0x00 to clear all bits
+    if (!_writeReg(M5PM1_REG_IRQ_STATUS3, 0x00)) {
+        return M5PM1_ERR_I2C_COMM;
     }
 
     _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_IRQ_STATUS);
@@ -3709,6 +3704,59 @@ m5pm1_err_t M5PM1::getDownloadLock(bool* lock)
 // NeoPixel Functions
 // ============================
 
+m5pm1_err_t M5PM1::setLeds(const m5pm1_rgb_t* colors, uint8_t arraySize, uint8_t count, bool autoRefresh)
+{
+    if (!_initialized) {
+        M5PM1_LOG_E(TAG, "Device not initialized");
+        return M5PM1_ERR_NOT_INIT;
+    }
+    if (colors == nullptr) {
+        M5PM1_LOG_E(TAG, "Colors array is null");
+        return M5PM1_ERR_INVALID_ARG;
+    }
+    if (count == 0) {
+        M5PM1_LOG_E(TAG, "LED count cannot be 0");
+        return M5PM1_ERR_INVALID_ARG;
+    }
+    if (count > M5PM1_MAX_LED_COUNT) {
+        M5PM1_LOG_E(TAG, "LED count %d exceeds maximum %d", count, M5PM1_MAX_LED_COUNT);
+        return M5PM1_ERR_INVALID_ARG;
+    }
+    if (count > arraySize) {
+        M5PM1_LOG_E(TAG, "LED count %d exceeds array size %d", count, arraySize);
+        return M5PM1_ERR_INVALID_ARG;
+    }
+
+    m5pm1_err_t err = setLedCount(count);
+    if (err != M5PM1_OK) {
+        return err;
+    }
+
+    uint8_t data[M5PM1_MAX_LED_COUNT * 2];
+    for (uint8_t i = 0; i < count; i++) {
+        uint16_t rgb565 =
+            ((uint16_t)(colors[i].r & 0xF8) << 8) | ((uint16_t)(colors[i].g & 0xFC) << 3) | (colors[i].b >> 3);
+        data[i * 2]     = (uint8_t)(rgb565 & 0xFF);
+        data[i * 2 + 1] = (uint8_t)((rgb565 >> 8) & 0xFF);
+    }
+
+    if (!_writeBytes(M5PM1_REG_NEO_DATA_START, data, (uint8_t)(count * 2))) {
+        M5PM1_LOG_E(TAG, "Failed to write NEO data buffer");
+        return M5PM1_ERR_I2C_COMM;
+    }
+
+    if (autoRefresh) {
+        err = refreshLeds();
+        if (err != M5PM1_OK) {
+            return err;
+        }
+    }
+
+    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_NEO);
+    M5PM1_LOG_I(TAG, "Set %d LEDs successfully%s", count, autoRefresh ? " (refreshed)" : "");
+    return M5PM1_OK;
+}
+
 m5pm1_err_t M5PM1::setLedCount(uint8_t count)
 {
     // 验证参数：count 必须在 1-31 范围内（5位寄存器限制）
@@ -3854,59 +3902,6 @@ m5pm1_err_t M5PM1::disableLeds()
 
     _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_NEO);
     M5PM1_LOG_I(TAG, "LEDs disabled and verified");
-    return M5PM1_OK;
-}
-
-m5pm1_err_t M5PM1::setLeds(const m5pm1_rgb_t* colors, uint8_t arraySize, uint8_t count, bool autoRefresh)
-{
-    if (!_initialized) {
-        M5PM1_LOG_E(TAG, "Device not initialized");
-        return M5PM1_ERR_NOT_INIT;
-    }
-    if (colors == nullptr) {
-        M5PM1_LOG_E(TAG, "Colors array is null");
-        return M5PM1_ERR_INVALID_ARG;
-    }
-    if (count == 0) {
-        M5PM1_LOG_E(TAG, "LED count cannot be 0");
-        return M5PM1_ERR_INVALID_ARG;
-    }
-    if (count > M5PM1_MAX_LED_COUNT) {
-        M5PM1_LOG_E(TAG, "LED count %d exceeds maximum %d", count, M5PM1_MAX_LED_COUNT);
-        return M5PM1_ERR_INVALID_ARG;
-    }
-    if (count > arraySize) {
-        M5PM1_LOG_E(TAG, "LED count %d exceeds array size %d", count, arraySize);
-        return M5PM1_ERR_INVALID_ARG;
-    }
-
-    m5pm1_err_t err = setLedCount(count);
-    if (err != M5PM1_OK) {
-        return err;
-    }
-
-    uint8_t data[M5PM1_MAX_LED_COUNT * 2];
-    for (uint8_t i = 0; i < count; i++) {
-        uint16_t rgb565 =
-            ((uint16_t)(colors[i].r & 0xF8) << 8) | ((uint16_t)(colors[i].g & 0xFC) << 3) | (colors[i].b >> 3);
-        data[i * 2]     = (uint8_t)(rgb565 & 0xFF);
-        data[i * 2 + 1] = (uint8_t)((rgb565 >> 8) & 0xFF);
-    }
-
-    if (!_writeBytes(M5PM1_REG_NEO_DATA_START, data, (uint8_t)(count * 2))) {
-        M5PM1_LOG_E(TAG, "Failed to write NEO data buffer");
-        return M5PM1_ERR_I2C_COMM;
-    }
-
-    if (autoRefresh) {
-        err = refreshLeds();
-        if (err != M5PM1_OK) {
-            return err;
-        }
-    }
-
-    _autoSnapshotUpdate(M5PM1_SNAPSHOT_DOMAIN_NEO);
-    M5PM1_LOG_I(TAG, "Set %d LEDs successfully%s", count, autoRefresh ? " (refreshed)" : "");
     return M5PM1_OK;
 }
 

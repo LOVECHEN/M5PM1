@@ -137,11 +137,9 @@ void setup()
     pm1.irqSetSysMask(M5PM1_IRQ_SYS_5VIN_REMOVE, M5PM1_IRQ_MASK_DISABLE);  // 开启5VIN移除
     pm1.irqSetSysMask(M5PM1_IRQ_SYS_5VIN_INSERT, M5PM1_IRQ_MASK_DISABLE);  // 开启5VIN插入
 
-    // 启用 PM1 GPIO1 的中断输出（这里的Mask Disable代表允许产生中断）。
-    // Enable PM1 GPIO1 IRQ output (Mask Disable means interrupt enabled).
+    // 启用 PM1 GPIO1 的中断输出
+    // Enable PM1 GPIO1 IRQ output
     pm1.gpioSetFunc(PM1_GPIO_IRQ_PIN, M5PM1_GPIO_FUNC_IRQ);
-    pm1.gpioSetMode(PM1_GPIO_IRQ_PIN, M5PM1_GPIO_MODE_INPUT);
-    pm1.gpioSetPull(PM1_GPIO_IRQ_PIN, M5PM1_GPIO_PULL_UP);
 
     // 设置ESP32的中断引脚，用于接收PM1的IRQ信号。
     // Setup ESP32 interrupt pin to receive IRQ signal from PM1.
