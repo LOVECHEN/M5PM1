@@ -615,23 +615,6 @@ typedef enum {
 } m5pm1_btn_delay_t;
 
 /**
- * @brief 按钮中断类型 / Button IRQ interrupt type
- * @note 用于 IRQ_STATUS3 寄存器的位掩码 / For IRQ_STATUS3 register bitmask
- */
-typedef enum {
-    M5PM1_BTN_IRQ_CLICK = 0x01,   // 单击中断 (bit 0)
-                                  // Single click interrupt (bit 0)
-    M5PM1_BTN_IRQ_WAKEUP = 0x02,  // 唤醒中断 (bit 1)
-                                  // Wakeup interrupt (bit 1)
-    M5PM1_BTN_IRQ_DOUBLE = 0x04,  // 双击中断 (bit 2)
-                                  // Double click interrupt (bit 2)
-    M5PM1_BTN_IRQ_ALL = 0x07,     // 所有按钮中断
-                                  // All button interrupts
-    M5PM1_BTN_IRQ_NONE = 0x00     // 无中断
-                                  // No interrupt
-} m5pm1_btn_irq_t;
-
-/**
  * @brief 中断屏蔽控制类型 / IRQ Mask Control Types
  */
 typedef enum {
@@ -2124,10 +2107,10 @@ public:
      *       If multiple events triggered, returns one per call (low to high)
      * @note 使用 M5PM1_CLEAN_ONCE 可以逐个处理多个中断
      *       Use M5PM1_CLEAN_ONCE to handle multiple interrupts one by one
-     * @note 如果没有中断，返回 M5PM1_BTN_IRQ_NONE
-     *       Returns M5PM1_BTN_IRQ_NONE if no interrupt
+     * @note 如果没有中断，返回 M5PM1_IRQ_BTN_NONE
+     *       Returns M5PM1_IRQ_BTN_NONE if no interrupt
      */
-    m5pm1_err_t irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
+    m5pm1_err_t irqGetBtnStatusEnum(m5pm1_irq_btn_t* btn_irq, m5pm1_clean_type_t cleanType = M5PM1_CLEAN_NONE);
 
     /**
      * @brief 清除所有按钮中断状态
@@ -2231,30 +2214,30 @@ public:
     /**
      * @brief Set single button event interrupt mask
      *        设置单个按钮事件中断屏蔽
-     * @param type 按钮事件类型：M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
-     *             Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
-     * @note 不支持 M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE，请使用 irqSetBtnMaskAll()
-     *       M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE not supported, use irqSetBtnMaskAll()
+     * @param type 按钮事件类型：M5PM1_IRQ_BTN_CLICK / WAKE / DOUBLE
+     *             Button event type: M5PM1_IRQ_BTN_CLICK / WAKE / DOUBLE
+     * @note 不支持 M5PM1_IRQ_BTN_ALL / M5PM1_IRQ_BTN_NONE，请使用 irqSetBtnMaskAll()
+     *       M5PM1_IRQ_BTN_ALL / M5PM1_IRQ_BTN_NONE not supported, use irqSetBtnMaskAll()
      * @param mask Mask control: M5PM1_IRQ_MASK_DISABLE(unmask) / M5PM1_IRQ_MASK_ENABLE(mask)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqSetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t mask);
+    m5pm1_err_t irqSetBtnMask(m5pm1_irq_btn_t type, m5pm1_irq_mask_ctrl_t mask);
 
     /**
      * @brief 获取单个按钮事件中断屏蔽状态
      *        Get single button event interrupt mask state
-     * @param type 按钮事件类型：M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
-     *             Button event type: M5PM1_BTN_IRQ_CLICK / WAKEUP / DOUBLE
-     * @note 不支持 M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE，请使用 irqGetBtnMaskBits()
-     *       M5PM1_BTN_IRQ_ALL / M5PM1_BTN_IRQ_NONE not supported, use irqGetBtnMaskBits()
+     * @param type 按钮事件类型：M5PM1_IRQ_BTN_CLICK / WAKE / DOUBLE
+     *             Button event type: M5PM1_IRQ_BTN_CLICK / WAKE / DOUBLE
+     * @note 不支持 M5PM1_IRQ_BTN_ALL / M5PM1_IRQ_BTN_NONE，请使用 irqGetBtnMaskBits()
+     *       M5PM1_IRQ_BTN_ALL / M5PM1_IRQ_BTN_NONE not supported, use irqGetBtnMaskBits()
      * @param mask 输出参数，存储屏蔽状态：M5PM1_IRQ_MASK_DISABLE (未屏蔽) / M5PM1_IRQ_MASK_ENABLE (已屏蔽)
      *             Output parameter, stores mask state: M5PM1_IRQ_MASK_DISABLE (unmasked) / M5PM1_IRQ_MASK_ENABLE
      * (masked)
      * @return 成功返回 M5PM1_OK，否则返回错误码
      *         Return M5PM1_OK on success, error code otherwise
      */
-    m5pm1_err_t irqGetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t* mask);
+    m5pm1_err_t irqGetBtnMask(m5pm1_irq_btn_t type, m5pm1_irq_mask_ctrl_t* mask);
 
     /**
      * @brief 一次性设置所有按钮中断屏蔽 / Set all button interrupt mask at once

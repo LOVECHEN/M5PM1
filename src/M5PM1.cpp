@@ -3266,7 +3266,7 @@ m5pm1_err_t M5PM1::irqGetBtnStatus(uint8_t* status, m5pm1_clean_type_t cleanType
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_type_t cleanType)
+m5pm1_err_t M5PM1::irqGetBtnStatusEnum(m5pm1_irq_btn_t* btn_irq, m5pm1_clean_type_t cleanType)
 {
     // 参数验证
     // Parameter validation
@@ -3288,17 +3288,17 @@ m5pm1_err_t M5PM1::irqGetBtnStatusEnum(m5pm1_btn_irq_t* btn_irq, m5pm1_clean_typ
 
     // 从低位往高位查找第一个触发的按钮事件
     // Find first triggered button event from low to high
-    *btn_irq = M5PM1_BTN_IRQ_NONE;
+    *btn_irq = M5PM1_IRQ_BTN_NONE;
     for (int i = 0; i < 3; i++) {
         if (irq_status & (1 << i)) {
-            *btn_irq = (m5pm1_btn_irq_t)(1 << i);
+            *btn_irq = (m5pm1_irq_btn_t)(1 << i);
             break;
         }
     }
 
     // 根据 cleanType 清除中断
     // Clear interrupt based on cleanType
-    if (cleanType == M5PM1_CLEAN_ONCE && *btn_irq != M5PM1_BTN_IRQ_NONE) {
+    if (cleanType == M5PM1_CLEAN_ONCE && *btn_irq != M5PM1_IRQ_BTN_NONE) {
         // 清除当前返回的按钮中断（写0清除机制）
         // Clear current button interrupt (write-0-to-clear mechanism)
         uint8_t new_val = irq_status & ~(*btn_irq);
@@ -3526,17 +3526,17 @@ m5pm1_err_t M5PM1::irqGetSysMaskBits(uint8_t* mask)
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqSetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t mask)
+m5pm1_err_t M5PM1::irqSetBtnMask(m5pm1_irq_btn_t type, m5pm1_irq_mask_ctrl_t mask)
 {
     // 不支持 ALL / NONE
     // ALL / NONE not supported
-    if (type == M5PM1_BTN_IRQ_ALL || type == M5PM1_BTN_IRQ_NONE) {
+    if (type == M5PM1_IRQ_BTN_ALL || type == M5PM1_IRQ_BTN_NONE) {
         M5PM1_LOG_E(TAG, "ALL/NONE not supported");
         return M5PM1_ERR_NOT_SUPPORTED;
     }
     // 验证参数：type 必须是有效的单个按钮事件位掩码 (bit[2:0])
     // Validate parameter: type must be a valid single button event bitmask (bit[2:0])
-    if (type != M5PM1_BTN_IRQ_CLICK && type != M5PM1_BTN_IRQ_WAKEUP && type != M5PM1_BTN_IRQ_DOUBLE) {
+    if (type != M5PM1_IRQ_BTN_CLICK && type != M5PM1_IRQ_BTN_WAKE && type != M5PM1_IRQ_BTN_DOUBLE) {
         return M5PM1_ERR_INVALID_ARG;
     }
     if (!_initialized) {
@@ -3563,18 +3563,18 @@ m5pm1_err_t M5PM1::irqSetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t mas
     return M5PM1_OK;
 }
 
-m5pm1_err_t M5PM1::irqGetBtnMask(m5pm1_btn_irq_t type, m5pm1_irq_mask_ctrl_t* mask)
+m5pm1_err_t M5PM1::irqGetBtnMask(m5pm1_irq_btn_t type, m5pm1_irq_mask_ctrl_t* mask)
 {
     if (mask == nullptr) return M5PM1_ERR_INVALID_ARG;
     // 不支持 ALL / NONE
     // ALL / NONE not supported
-    if (type == M5PM1_BTN_IRQ_ALL || type == M5PM1_BTN_IRQ_NONE) {
+    if (type == M5PM1_IRQ_BTN_ALL || type == M5PM1_IRQ_BTN_NONE) {
         M5PM1_LOG_E(TAG, "ALL/NONE not supported");
         return M5PM1_ERR_NOT_SUPPORTED;
     }
     // 验证参数：type 必须是有效的单个按钮事件位掩码 (bit[2:0])
     // Validate parameter: type must be a valid single button event bitmask (bit[2:0])
-    if (type != M5PM1_BTN_IRQ_CLICK && type != M5PM1_BTN_IRQ_WAKEUP && type != M5PM1_BTN_IRQ_DOUBLE) {
+    if (type != M5PM1_IRQ_BTN_CLICK && type != M5PM1_IRQ_BTN_WAKE && type != M5PM1_IRQ_BTN_DOUBLE) {
         return M5PM1_ERR_INVALID_ARG;
     }
     if (!_initialized) {
