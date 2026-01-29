@@ -114,7 +114,16 @@ Feature overview of the PM1 power management driver library for Arduino/ESP-IDF.
 
 ### 14) AW8737A Pulse Control
 
-- `setAw8737aPulse`/`refreshAw8737aPulse`
+- **Pulse Mode**
+  - `setAw8737aPulse(pin, pulseNum, refresh)`: Set pulse count (0-3)
+  - `refreshAw8737aPulse`: Trigger pulse refresh
+- **Gain Mode** (semantic aliases)
+  - `setAw8737aMode(pin, mode, refresh)`: Set gain mode (MODE_1 to MODE_4)
+  - `refreshAw8737aMode`: Trigger mode refresh
+- **Notes**
+  - If pin is not output mode, it will be auto-configured as push-pull output
+  - If using open-drain output, external pull-up is required
+  - When refresh=NOW, there will be a 20ms delay after execution
 
 ### 15) RTC RAM
 

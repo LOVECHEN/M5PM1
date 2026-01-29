@@ -114,7 +114,16 @@
 
 ### 14) AW8737A 脉冲控制
 
-- `setAw8737aPulse`/`refreshAw8737aPulse`
+- **脉冲模式**
+  - `setAw8737aPulse(pin, pulseNum, refresh)`: 设置脉冲数量（0-3）
+  - `refreshAw8737aPulse`: 触发脉冲刷新
+- **增益模式**（语义化别名）
+  - `setAw8737aMode(pin, mode, refresh)`: 设置增益模式（MODE_1 到 MODE_4）
+  - `refreshAw8737aMode`: 触发模式刷新
+- **注意事项**
+  - 如果引脚不是输出模式，会自动配置为推挽输出
+  - 如果使用开漏输出，需要外部上拉电阻
+  - refresh=NOW 时执行后会有 20ms 延迟
 
 ### 15) RTC RAM
 
