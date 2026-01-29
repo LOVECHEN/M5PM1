@@ -263,7 +263,7 @@ typedef enum {
 #define M5PM1_REG_TIM_CNT_2 0x3A  // R/W   定时器计数字节2 / Timer counter byte 2
 #define M5PM1_REG_TIM_CNT_3 \
     0x3B  // R/W   定时器计数字节3（bit 6:0，最大31位） / Timer counter byte 3 (bit 6:0, max 31 bits)
-          //       31位定时器，单位秒，最大约68年 / 31-bit timer in seconds, max ~68 years
+          //       定时器，单位秒，最大214748364秒(约6.8年) / Timer in seconds, max 214748364 (~6.8 years)
 #define M5PM1_REG_TIM_CFG \
     0x3C  // R/W   定时器配置 / Timer configuration
           //       [7-4] 保留 / Reserved
@@ -1853,8 +1853,8 @@ public:
     /**
      * @brief 设置定时器
      *        Set timer
-     * @param seconds 定时时间（秒）
-     *                Timer duration in seconds
+     * @param seconds 定时时间（秒，最大214748364）
+     *                Timer duration in seconds (max 214748364)
      * @param action 定时器到期后的动作：
      *               Action after timer expires:
      *               - M5PM1_TIM_ACTION_STOP: 停止，无动作 / Stop, no action

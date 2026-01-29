@@ -2833,9 +2833,9 @@ m5pm1_err_t M5PM1::timerSet(uint32_t seconds, m5pm1_tim_action_t action)
         return M5PM1_ERR_NOT_INIT;
     }
 
-    // 验证定时器计数值 (31-bit: 0-0x7FFFFFFF) / Validate timer count
-    if (seconds > 0x7FFFFFFF) {
-        M5PM1_LOG_E(TAG, "Invalid timer count: %lu (max 0x7FFFFFFF, ~68 years)", seconds);
+    // 验证定时器计数值 (最大 214748364 秒) / Validate timer count (max 214748364 seconds)
+    if (seconds > 214748364) {
+        M5PM1_LOG_E(TAG, "Invalid timer count: %lu (max 214748364, ~6.8 years)", seconds);
         return M5PM1_ERR_INVALID_ARG;
     }
 
